@@ -1,0 +1,10 @@
+
+# Cahier des charges
+- TB en anglais
+- Présentation des concepts généraux de la kleptographie (définition, histoire, SETUP attacks, ASAs, ... )
+- Implémentation de quelques attaques kleptographiques
+- Utilisation de ces attaques dans un scénario permettant d'expliquer la kleptographie à un public non-initié
+
+
+# Résumé
+En 1996, Young et Yung ont développé l'idée de la kleptographie: celle-ci vise à étudier comment il est possible pour un attaquant de subtiliser des données de manière sûre et subvertivement. Ce champ d'étude n'était auparavant étudié que par les académiciens mais suite à l'affaire Snowden en 2013 et à la divulgation de documents de la NSA montrant l'implication de cette dernière dans la réalisation de possibles attaques kleptographiques, la menace est devenue un peu plus concrète et prise au sérieux. Afin de sensibiliser un public aussi bien novice que quelque peu initié à la sécurité, ce travail de bachelor va présenter les principaux concepts de la kleptographies, définir les notions utilisés propres à celle-ci et discuter de quelques systèmes cryptographiques actuellement utilisés dans le monde qui peuvent contenir une backdoor.
