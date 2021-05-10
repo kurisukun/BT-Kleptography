@@ -38,6 +38,18 @@ From 2014 onwards, the game has changed and many cryptologists are now looking i
 
 
 
+## Kleptography
+
+
+
+### General definition
+
+As described by Yung and Young, kleptography is: *The science of stealing information securely and subliminally from black-box cryptographic implementations*.  
+
+This quote does not seem like much but she includes a lot of very important notions about kleptography. In this chapter we will deconstruct this definition and show how kleptography is articulated on the double link between the ease an attacker has to steal information from a victim, to hide their malicious activity and the impossibility of a lambda user to realize it or even to do the same.
+
+
+
 
 
 
