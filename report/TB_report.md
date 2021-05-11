@@ -10,7 +10,7 @@ In our modern, ultra-connected world, we readily imagine that the world's great 
 
 ### Problematic
 
- 
+ **//TODO**
 
 
 
@@ -52,8 +52,68 @@ This quote does not seem like much but she includes a lot of very important noti
 
 
 
+### SETUP
+
+Yung et Young designed the mechanism of SETUP (Secretly Embedded Trapdoor with Universal Protection) to perform kleptographic attacks. As described, one of the most important property of those attacks is the secrecy and the subliminality. The purpose of the SETUP mechanism is for an attacker to obtain information of the user's private key in a way that the user does not realize it or the attacker does not get caught. The SETUP does not leak information directly, it uses public parameters to hide private key information in it in a way only the person who has set the system up can recover it. 
+
+
+
+#### SETUP definition
+
+A more formal definition as been given by Yung and Young in their article [^fn4]:
+
+> Assume that C is a black-box cryptosystem with a publicly known specification. A (regular) SETUP mechanism is an algorithmic modification made to C to get C’ such that:
+>
+> 1. The input of C’ agrees with the public specifications of the input of C .
+> 2. C’ computes efficiently using the attacker’s public encryption function E (and possibly other functions as well), contained within C’.
+> 3. The attacker’s private decryption function D is not contained within C‘ and is known only by the attacker.
+> 4. The output of C‘ agrees with the public specifications of the output of C. At the same time, it contains published bits (of the user’s secret key) which are easily derivable by the attacker (the output can be generated during key-generation or during system operation like message sending).
+> 5. Furthermore, the output of C and C’ are polynomially indistinguishable to everyone except the attacker.
+> 6. After the discovery of the specifics of the setup algorithm and after discovering its presence in the implementation (e.g. reverse-engineering of hardware tamper-proof device), users (except the attacker) cannot determine past (or future) keys.
+
+
+
+If we take this definition point by point, we can bring up several things:
+
+- The first point shows that a user must be able to use C' in the same way as he uses C. This means that the parameters taken as input by C' must not be different from C otherwise it could make the user suspicious.
+- The second point implies that the computation time of C' does not differ significantly from that of C. This is important because a user may feel that something is wrong if C' takes for example twice as much time as C.
+- According to the third point, since only the attacker knows and has access to a decryption function D, only he can decrypt the leaked information.
+- The form of the output of the two algorithms must not be different, if the user expects, for example, a 256 bits length output, then the output of C' must also be 256 bits long for the fourth point. In addition, the attacker must be able to retrieve the hidden information from the user's key.
+- In fifth, a user must not be able to distinguish the output of C and C' in polynomial time with reasonable computational capacity.
+- Finally, if the user discovers that the system is contaminated using reverse-engineering, it is still impossible for the user to recover past or future information from the private key using his study of the system. 
+
+It is important to note that for Yung and Young, this last point is really only important for the formal definition of what they call a *strong SETUP* and not for *regular SETUP* as seen previously.
+
+
+
+#### Weak SETUP definition
+
+> A weak setup is a regular setup except that the output of C and C‘ are polynomially indistinguishable to everyone except the attacker and the owner of the device who is in control (knowledge) of his or her own private key (i.e, requirement 5 above is changed).
+
+As Yung and Young say in their paper [^fn4], this form of SETUP may seem insecure, and indeed it is in the sense that a user in possession of the blackbox device can distinguish a genuine output from a contaminated one. But in reality, it implies that this same user manages to find out how to detect it by his own means. Moreover, it also implies that the user is aware that this kind of attack exists, otherwise he won't even suspect it. For these reasons, this type of SETUP can be useful as we can see **(EXAMPLE SIGNATURE EL GAMAL?)**
+
+
+
+#### Strong SETUP definition
+
+> A strong setup is a regular setup, but in addition we assume that
+> the users are able to hold and fully reverse-engineer the device after its past usage and before its future usage. They are able to analyze the actual implementation of C’ and deploy the device. However, the users still cannot steal previously generated/future generated keys, and if the setup is not always applied to future keys, then setup-free keys and setup keys remain polynomially indistinguishable.
+
+
+
+#### Summary of SETUP types
+
+Each of these types can be seen as a security level of a SETUP, so it seems important to summarize the main properties distinguishing them in order to allow a finer analysis of existing attacks that we will see later.
+
+| Type    | Important properties                                         |
+| ------- | ------------------------------------------------------------ |
+| Weak    | Only the user of the device can distinguish an output from C and C' in a polynomial time and knowing the private key |
+| Regular | Even with the private key, the user of the device cannot distinguish an output from C and C' in a polynomial time |
+| Strong  | With a complete understanding of how the system works and an access to all existing keys, the user will not be able to recover past and future keys or distinguish an output from C and C' |
+
 
 
 [^fn1]: http://rump2007.cr.yp.to/15-shumow.pdf
 [^fn2]: Security of Symmetric Encryption
 [^fn3]: Subvert KEM to Break DEM:Practical Algorithm-Substitution Attacks on Public-Key Encryption
+[^fn4]:  Kleptography: Using Cryptography Against Cryptography
