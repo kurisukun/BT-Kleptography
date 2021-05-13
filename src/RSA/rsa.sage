@@ -1,3 +1,12 @@
+def encode_message(m):
+    return int("".join(list(map(lambda c: str(ord(c)), list(m)))))
+
+def rsa_encrypt(m, e, n) :
+    return power_mod (m, e, n)
+
+def rsa_decrypt(c, d, n) :
+    return power_mod(c, d, n)
+
 def setup_attacker_key_gen(size):
     E = 65535
     phi = 0
@@ -57,7 +66,7 @@ alice_keys = setup_victim_key_gen(64, eve_e, eve_n)
 
 
 message = "TEST"
-encoded_message = int("".join(list(map(lambda c: str(ord(c)), list(message)))))
+encoded_message = encode_message(message)
 print(f'Message to send: {encoded_message}')
 
 c = rsa_encrypt(encoded_message, alice_e, alice_n)
