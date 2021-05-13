@@ -36,8 +36,6 @@ From 2014 onwards, the game has changed and many cryptologists are now looking i
 
 
 
-
-
 ## Kleptography
 
 
@@ -47,8 +45,6 @@ From 2014 onwards, the game has changed and many cryptologists are now looking i
 As described by Yung and Young, kleptography is: *The science of stealing information securely and subliminally from black-box cryptographic implementations*.  
 
 This quote does not seem like much but she includes a lot of very important notions about kleptography. In this chapter we will deconstruct this definition and show how kleptography is articulated on the double link between the ease an attacker has to steal information from a victim, to hide their malicious activity and the impossibility of a lambda user to realize it or even to do the same.
-
-
 
 
 
@@ -110,6 +106,22 @@ Each of these types can be seen as a security level of a SETUP, so it seems impo
 | Weak    | Only the user of the device can distinguish an output from C and C' in a polynomial time and knowing the private key |
 | Regular | Even with the private key, the user of the device cannot distinguish an output from C and C' in a polynomial time |
 | Strong  | With a complete understanding of how the system works and an access to all existing keys, the user will not be able to recover past and future keys or distinguish an output from C and C' |
+
+
+
+#### Leakage bandwidth
+
+As explained before, an attacker uses the public parameters of a user in order to recover the private key. But as we will see, it is not always possible to obtain a ratio of 1 set of public parameters for 1 exfiltration, it is indeed sometimes necessary to have access to 2 or more public keys. This is what Yung and Young call *leakage bandwidth* and they define it as follows[^fn4]:  
+
+> A (m, n)-leakage scheme is a SETUP mechanism that leaks m keys/secret messages over n keys/messages that are output by the cryptographic device (m ≤ n).
+
+
+
+This means if an attacker requires a private key to recover a private key, the system is a (1,1)-leakage scheme.
+
+
+
+
 
 
 
