@@ -58,19 +58,19 @@ def rsa_setup_attack(c, D, N, e, n):
     return rsa_decrypt(c, d, n)
 
 
-eve_keys = setup_attacker_key_gen(64)
+message = "Hi Alice"
+print(f'Original message: {message}')
+encoded_message = encode_message(message)
+print(f'Encoded message: {encoded_message}')
+
+eve_keys = setup_attacker_key_gen(1024)
 (eve_e, eve_d, eve_n) = eve_keys
 
-alice_keys = setup_victim_key_gen(64, eve_e, eve_n)
+alice_keys = setup_victim_key_gen(1024, eve_e, eve_n)
 (alice_e, alice_d, alice_n) = alice_keys
-
-
-message = "TEST"
-encoded_message = encode_message(message)
-print(f'Message to send: {encoded_message}')
 
 c = rsa_encrypt(encoded_message, alice_e, alice_n)
 print(f'Ciphertext: {c}')
 
-pwned = rsa_setup_attack(c, eve_d, eve_n, alice_e, alice_n)
-print(f'Pwned message: {pwned}')
+stolen_message = rsa_setup_attack(c, eve_d, eve_n, alice_e, alice_n)
+print(f'Pwned message: {stolen_message}')
