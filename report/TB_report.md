@@ -148,7 +148,7 @@ Because of how Alice's exponent is generated, Eve can easily factor modulus n by
 
 It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption of Bob to obtain the prime p. 
 
-Voici le déroulement d'un échange de message entre Alice et Bob et la mise en place de l'attaque par Eve (voir **Indiquer index** pour le code correspondant): 
+Here is the sequence of a message exchange between Alice and Bob and the implementation of the attack by Eve (see **Indicate index** for the corresponding code): 
 
 ```python
 ######## ATTACKER ########
@@ -174,11 +174,11 @@ Bob encrypts the message to send it to Alice
 Encryption of 7210533:
     c = m^e mod(n) = 1471085067
 
-Alice receives Bob's message. She decrypts it
+Alice receives Bobs message. She decrypts it
 Decryption of 1471085067:
     m = c^d mod(n) = 7210533
 
-Eve attacks Alice's private key
+Eve attacks Alices private key
 ######## SETUP ATTACK ########
     p ≡ e^D mod(N) ≡ 49537
 Knowing p, we can factor n to compute q:
@@ -196,9 +196,7 @@ Eve has decrypted Bobs message: 7210533
 
 ##### Security of the attack
 
-Une critique que l'on peut faire à cette attaque est qu'elle n'est pas très réaliste compte tenu des valeurs que peut prendre l'exposant e, en effet, e est trop grand par rapport aux valeurs du module n. Cela implique donc dans notre scénario que si Alice s'attend à des valeurs plutôt petites de e, elle se rendra facilement compte de la supercherie. On peut le remarquer dans l'exemple de déroulement précédent, on voit que l'exposant vaut 2410382527 alors que n lui vaut 1928624021. Dans leur article [^fn5], Yung et Young font remarquer que c'est ce qui arrive dans le cas de PGP, l'exposant étant de l'ordre de 5 bits.
-
-
+One criticism that can be made of this attack is that it is not very realistic given the values that the exponent e can take, indeed, e is too large compared to the values of the modulus n. This implies in our scenario that if Alice expects rather small values of e, she will easily realize the deception. We can notice it in the previous example, we see that the exponent is 2410382527 while n is 1928624021. In their article [^fn5], Yung and Young point out that this is what happens in the case of PGP, the exponent being of the order of 5 bits.
 
 
 
