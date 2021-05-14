@@ -117,7 +117,7 @@ As explained before, an attacker uses the public parameters of a user in order t
 
 
 
-This means if an attacker requires a private key to recover a private key, the system is a (1,1)-leakage scheme.
+This means if an attacker requires a public key to recover a private key, the system is a (1,1)-leakage scheme. In the same way, if an attacker needs 3 encrypted messages to be sent to get the private key, it implies the system is a (1,3)-leakage scheme.
 
 
 
@@ -144,96 +144,166 @@ Normally in RSA, we randomly generate the exponent e such that $1 < e < \phi(n)$
 
 
 
-Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing $p \equiv e^D mod(N)$ since $e^D \mod(N) = (p^E)^D \mod(N) = p \mod(N)$  since the parameter n is public. Then she can compute $\phi(n)$ and finally find $d \equiv e^-1 \mod(\phi(n))$, Alice's private key and decrypt all messages Bob sends to her. 
+Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing $p \equiv e^D \mod(N) = (p^E)^D \mod(N) = p \mod(N)$  since the parameter n is public. Then she can compute $\phi(n)$ and finally find $d \equiv e^-1 \mod(\phi(n))$, Alice's private key and decrypt all messages Bob sends to her. 
 
 It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption of Bob to obtain the prime p. 
 
-Here is an example of an implementation in Sage of this attack:
+Voici le déroulement d'un échange de message entre Alice et Bob et la mise en place de l'attaque par Eve (voir **Indiquer index** pour le code correspondant): 
 
 ```python
-def encode_message(m):
-    return int("".join(list(map(lambda c: str(ord(c)), list(m)))))
+######## ATTACKER ########
+Eve generates her keys:
+    P = 51749 and Q = 51407
+    N = P · Q = 2660260843
+    ϕ(N) = (P − 1)·(Q − 1) = 2660157688
+    E = 21001
+    D ≡ E^−1 ≡ 2449635233 (mod N) 
 
-def rsa_encrypt(m, e, n) :
-    return power_mod (m, e, n)
+######## VICTIM ########
+Alice generates her keys using contaminated system:
+    p = 49537 and q = 38933
+    n = p · q = 1928624021
+    ϕ(n) = (p − 1)·(q − 1) = 1928535552
+    e ≡ p^E ≡ 49537^21001 ≡ 2410382527 (mod N)
+    d ≡ e^−1 ≡ 1180109119 (mod n) 
 
-def rsa_decrypt(c, d, n) :
-    return power_mod(c, d, n)
+Bob wants to send the message: Hi!
+Encoded message: 7210533 
 
-def setup_attacker_key_gen(size):
-    E = 65535
-    phi = 0
-    P = 0
-    Q = 0
-    N = 0
-    while gcd(E, phi) != 1:
-        P = random_prime (2^(size / 2), lbound = 2^(size/2-1))
-        Q = random_prime (2^(size / 2), lbound = 2^(size/2-1))
-        N = P*Q
-        phi = (P-1)*(Q-1)
-    D = inverse_mod(E, phi)
-    print("\n\n ######## ATTACKER ########")
-    print(f'P = {P} and Q = {Q}')
-    print(f'N = PQ = {P} · {Q} = {N}')
-    print(f'ϕ(N) = (P − 1)(Q − 1) = {P-1}*{Q-1} = {phi}')
-    print(f'E = {E}')
-    print(f'D ≡ E^−1 ≡ {D} (mod N)')
-    return (E, D, N)
+Bob encrypts the message to send it to Alice
+Encryption of 7210533:
+    c = m^e mod(n) = 1471085067
 
-def setup_victim_key_gen(size, E, N):
-    q = random_prime ( 2^(size / 2), lbound = 2^(size/2-1))
-    
-    e = 0
-    phi = 0
-    while gcd(e, phi) != 1:
-        p = random_prime ( 2^(size / 2), lbound = 2^(size/2-1))
-        n = p*q
-        phi = (p-1)*(q-1)
-        e = power_mod(p, E, N)
-    d = inverse_mod(e, phi)
+Alice receives Bob's message. She decrypts it
+Decryption of 1471085067:
+    m = c^d mod(n) = 7210533
 
-    print("\n\n ######## VICTIM ########")
-    print(f'p = {p} and q = {q}')
-    print(f'n = pq = p · q = {n}')
-    print(f'ϕ(n) = (p − 1)(q − 1) = {p-1}*{q-1} = {phi}')
-    print(f'e ≡ p^E ≡ {p}^{E} ≡ {e} (mod N)')
-    print(f'd ≡ e^−1 ≡ {d} (mod n)')
-    return (e,d,n)
+Eve attacks Alice's private key
+######## SETUP ATTACK ########
+    p ≡ e^D mod(N) ≡ 49537
+Knowing p, we can factor n to compute q:
+    q = n/p = 38933
+    ϕ(n) = (p − 1)·(q − 1) = 1928535552
+    d ≡ e^−1 ≡ 1180109119 (mod n) 
 
+Decryption of 1471085067:
+    m = c^d mod(n) = 7210533
 
-def rsa_setup_attack(c, D, N, e, n):
-    p = power_mod(e, D, N)
-    print("\n\n ######## SETUP ########")
-    print(f'p ≡ e^D = {e}^{D} mod(N) ≡ {p} ≡ {p} (mod {N})')
-    q = n/p
-    phi = (p-1)*(q-1)
-    d = inverse_mod(e, phi)
-    return rsa_decrypt(c, d, n)
-
-
-message = "Hi Alice"
-print(f'Original message: {message}')
-encoded_message = encode_message(message)
-print(f'Encoded message: {encoded_message}')
-
-eve_keys = setup_attacker_key_gen(1024)
-(eve_e, eve_d, eve_n) = eve_keys
-
-alice_keys = setup_victim_key_gen(1024, eve_e, eve_n)
-(alice_e, alice_d, alice_n) = alice_keys
-
-c = rsa_encrypt(encoded_message, alice_e, alice_n)
-print(f'Ciphertext: {c}')
-
-stolen_message = rsa_setup_attack(c, eve_d, eve_n, alice_e, alice_n)
-print(f'Pwned message: {stolen_message}')
+Eve has decrypted Bobs message: 7210533
 ```
 
 
 
 ##### Security of the attack
 
+Une critique que l'on peut faire à cette attaque est qu'elle n'est pas très réaliste compte tenu des valeurs que peut prendre l'exposant e, en effet, e est trop grand par rapport aux valeurs du module n. Cela implique donc dans notre scénario que si Alice s'attend à des valeurs plutôt petites de e, elle se rendra facilement compte de la supercherie. On peut le remarquer dans l'exemple de déroulement précédent, on voit que l'exposant vaut 2410382527 alors que n lui vaut 1928624021. Dans leur article [^fn5], Yung et Young font remarquer que c'est ce qui arrive dans le cas de PGP, l'exposant étant de l'ordre de 5 bits.
 
+
+
+
+
+
+
+## Annexe
+
+
+
+```python
+def encode_message(m):
+    return int("".join(list(map(lambda c: str(ord(c)), list(m)))))
+
+def rsa_encrypt(m, e, n) :
+    print(f'Encryption of {m}:')
+    c = power_mod (m, e, n)
+    print(f'    c = m^e mod(n) = {c}\n')
+    return c
+
+def rsa_decrypt(c, d, n) :
+    print(f'Decryption of {c}:')
+    m = power_mod(c, d, n)
+    print(f'    m = c^d mod(n) = {m}\n')
+    return m
+
+def setup_attacker_key_gen(size):
+    P = 0
+    Q = random_prime(2^(size / 2), lbound = 2^(size/2-1))
+    phi = 0
+    N = 0
+    E = 0
+    while True:
+        P = random_prime(2^(size / 2), lbound = 2^(size / 2-1))
+        E = ZZ.random_element(1, 2^(size/2-1))
+        N = P*Q
+        phi = (P-1)*(Q-1)
+        if gcd(E, phi) == 1 and 1 < E and E < phi:
+            break
+    D = inverse_mod(E, phi)
+    print("######## ATTACKER ########")
+    print("Eve generates her keys:")
+    print(f'    P = {P} and Q = {Q}')
+    print(f'    N = P · Q = {N}')
+    print(f'    ϕ(N) = (P − 1)·(Q − 1) = {phi}')
+    print(f'    E = {E}')
+    print(f'    D ≡ E^−1 ≡ {D} (mod N) \n')
+    return (E, D, N)
+
+def setup_victim_key_gen(size, E, N):
+    p = 0
+    q = random_prime ( 2^(size / 2), lbound = 2^(size/2-1))
+    phi = 0
+    n = 0
+    e = 0
+    while gcd(e, phi) != 1:
+        p = random_prime ( 2^(size / 2), lbound = 2^(size/2-1))
+        n = p*q
+        phi = (p-1)*(q-1)
+        e = power_mod(p, E, N)
+    d = inverse_mod(e, phi)
+    print("######## VICTIM ########")
+    print("Alice generates her keys using contaminated system:")
+    print(f'    p = {p} and q = {q}')
+    print(f'    n = p · q = {n}')
+    print(f'    ϕ(n) = (p − 1)·(q − 1) = {phi}')
+    print(f'    e ≡ p^E ≡ {p}^{E} ≡ {e} (mod N)')
+    print(f'    d ≡ e^−1 ≡ {d} (mod n) \n')
+    return (e,d,n)
+
+
+def rsa_setup_attack(c, D, N, e, n):
+    p = power_mod(e, D, N)
+    print("######## SETUP ATTACK ########")
+    print(f'    p ≡ e^D mod(N) ≡ {p}')
+    q = n/p
+    print(f'Knowing p, we can factor n to compute q:')
+    print(f'    q = n/p = {q}')
+    phi = (p-1)*(q-1)
+    print(f'    ϕ(n) = (p − 1)·(q − 1) = {phi}')
+    d = inverse_mod(e, phi)
+    print(f'    d ≡ e^−1 ≡ {d} (mod n) \n')
+    return rsa_decrypt(c, d, n)
+
+
+eve_keys = setup_attacker_key_gen(32)
+(eve_e, eve_d, eve_n) = eve_keys
+
+alice_keys = setup_victim_key_gen(32, eve_e, eve_n)
+(alice_e, alice_d, alice_n) = alice_keys
+
+message = "Hi!"
+print(f'Bob wants to send the message: {message}')
+encoded_message = encode_message(message)
+print(f'Encoded message: {encoded_message} \n')
+
+print("Bob encrypts the message to send it to Alice")
+c = rsa_encrypt(encoded_message, alice_e, alice_n)
+
+print("Alice receives Bob's message. She decrypts it")
+plaintext = rsa_decrypt(c, alice_d, alice_n)
+
+print("Eve attacks Alice's private key")
+stolen_message = rsa_setup_attack(c, eve_d, eve_n, alice_e, alice_n)
+print(f'Eve has decrypted Bob\'s message: {stolen_message}')
+```
 
 
 
@@ -241,3 +311,4 @@ print(f'Pwned message: {stolen_message}')
 [^fn2]: Security of Symmetric Encryption
 [^fn3]: Subvert KEM to Break DEM:Practical Algorithm-Substitution Attacks on Public-Key Encryption
 [^fn4]:  Kleptography: Using Cryptography Against Cryptography
+[^fn5]:The Dark Side of “Black-Box’’ Cryptography or: Should We Trust Capstone?
