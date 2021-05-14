@@ -200,8 +200,6 @@ One criticism that can be made of this attack is that it is not very realistic g
 
 
 
-
-
 ## Annexe
 
 
