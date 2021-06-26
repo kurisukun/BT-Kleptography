@@ -24,11 +24,15 @@ In our modern, ultra-connected world, we readily imagine that the world's great 
 
 ## State of the art
 
-In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection (SETUP). They wanted to show the threats one can encounter when using a blackbox device such as smartcards and more recently mobile phones. Their article has refined the existing concepts of SETUP and provided new definitions of them. In addition, they proved that there are attacks that can leak the secret key of a blackbox system without the use of subliminal channels. With this paper and the proofs they made, Yung and Young introduced the concept of kleptography. 
+In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP. They wanted to show the threats one can encounter when using a blackbox device such as smartcards and more recently mobile phones. Their article has refined the existing concepts of SETUP and provided new definitions of them. In addition, they proved that there are attacks that can leak the secret key of a blackbox system without the use of subliminal channels. With this paper and the proofs they made, Yung and Young introduced the concept of kleptography. 
 
-As we will see further, what Yung and Young have showed is that kleptographic attacks can be considered as asymmetric backdoors. An attacker who implements the backdoor into a cryptosystem or cryptographic protocol is the only one who actually can have use of it. Furthermore, they showed that the output of that subverted cryptosystem is what they call *computationally indistinguishable* compared to a faithful output. The asymmetric aspect also implies that even if anyone succeeds into reverse-engineering the subverted system, he can find that it's compromised but will not be able to use it, where a classic symmetric backdoor can be in turn used after its discovery.
+As we will see further, what Yung and Young have showed is that kleptographic attacks can be considered as asymmetric backdoors. An attacker who implements the backdoor into a cryptosystem or cryptographic protocol is the only one who actually can have use of it. Furthermore, they showed that the output of that subverted cryptosystem is *computationally indistinguishable* compared to a faithful output. The asymmetric aspect also implies that even if anyone succeeds into reverse-engineering the subverted system, he can find that it's compromised but will not be able to use it, where a classic symmetric backdoor can be in turn used after its discovery.
 
-The implications of their results were great but at the time only a very few of academics believed in them. it was considered more of a theoretical issue than a real threat. This was until 2013 with the Dual_EC_DRBG controversy. 
+//TODO Une autre date importante: 2012 et les scandales NSA (avant Dual-EC)
+
+The implications of their results were great but at the time only academics believed in them. it was considered more of a theoretical issue than a real threat. This was until 2013 with the Dual_EC_DRBG controversy. 
+
+//TODO dire que Dual-EC a été supprimé du draft du NIST depuis 2013
 
 The pseudorandom number generator was initially published in 2006 by the NIST and was intended to have a security proof. Since then a lot of researchers highlighted the multiple flaws present in the algorithm architecture and two cryptologists of Microsoft, Dan Shumow and Niels Ferguson, warned of the possible existence of a backdoor [^fn1]. In spite of this Dual_EC_DRBG has been standardized and implemented in multiple libraries like RSA BSAFE or OpenSSL. All suspicions will be proven true when finally several internal NSA documents will be leaked following the Snowden affair and will indicate the existence of the SIGINT project, thus proving the existence of the famous backdoor in the Dual_EC_DRBG algorithm and the very important role that the intelligence agency played in the standardization process. 
 
@@ -44,13 +48,13 @@ From 2014 onwards, the game has changed and many cryptologists are now looking i
 
 As described by Yung and Young, kleptography is: *The science of stealing information securely and subliminally from black-box cryptographic implementations*.  
 
-This quote does not seem like much but she includes a lot of very important notions about kleptography. In this chapter we will deconstruct this definition and show how kleptography is articulated on the double link between the ease an attacker has to steal information from a victim, to hide their malicious activity and the impossibility of a lambda user to realize it or even to do the same.
+This quote does not seem like much but she includes a lot of very important notions about kleptography. In this chapter, we will deconstruct this definition and show how kleptography is articulated on the double link between the ease an attacker has to steal information from a victim, to hide their malicious activity and the impossibility of a lambda user to realize it or even to do the same.
 
 
 
 ### SETUP
 
-Yung et Young designed the mechanism of SETUP (Secretly Embedded Trapdoor with Universal Protection) to perform kleptographic attacks. As described, one of the most important property of those attacks is the secrecy and the subliminality. The purpose of the SETUP mechanism is for an attacker to obtain information of the user's private key in a way that the user does not realize it or the attacker does not get caught. The SETUP does not leak information directly, it uses public parameters to hide private key information in it in a way only the person who has set the system up can recover it. 
+Yung and Young designed the mechanism of SETUP (Secretly Embedded Trapdoor with Universal Protection) to perform kleptographic attacks. As described, one of the most important property of those attacks is the secrecy and the subliminality. The purpose of the SETUP mechanism is for an attacker to obtain information of the user's private key in a way that the user does not realize it or the attacker does not get caught. The SETUP does not leak information directly, it uses public parameters to hide private key information in it in a way only the person who has set the system up can recover it. 
 
 
 
@@ -68,6 +72,8 @@ A more formal definition as been given by Yung and Young in their article [^fn4]
 > 6. After the discovery of the specifics of the setup algorithm and after discovering its presence in the implementation (e.g. reverse-engineering of hardware tamper-proof device), users (except the attacker) cannot determine past (or future) keys.
 
 
+
+//TODO etoffer avec même quelques exemples
 
 If we take this definition point by point, we can bring up several things:
 
@@ -92,14 +98,15 @@ As Yung and Young say in their paper [^fn4], this form of SETUP may seem insecur
 
 #### Strong SETUP definition
 
-> A strong setup is a regular setup, but in addition we assume that
-> the users are able to hold and fully reverse-engineer the device after its past usage and before its future usage. They are able to analyze the actual implementation of C’ and deploy the device. However, the users still cannot steal previously generated/future generated keys, and if the setup is not always applied to future keys, then setup-free keys and setup keys remain polynomially indistinguishable.
+> A strong setup is a regular setup, but in addition we assume that the users are able to hold and fully reverse-engineer the device after its past usage and before its future usage. They are able to analyze the actual implementation of C’ and deploy the device. However, the users still cannot steal previously generated/future generated keys, and if the setup is not always applied to future keys, then setup-free keys and setup keys remain polynomially indistinguishable.
 
 
 
 #### Summary of SETUP types
 
 Each of these types can be seen as a security level of a SETUP, so it seems important to summarize the main properties distinguishing them in order to allow a finer analysis of existing attacks that we will see later.
+
+//TODO avoir une comparaison plus haut niveau avec des exemples par exemple
 
 | Type    | Important properties                                         |
 | ------- | ------------------------------------------------------------ |
@@ -121,7 +128,7 @@ This means if an attacker requires a public key to recover a private key, the sy
 
 
 
-#### SETUP RSA
+#### SETUP RSA I
 
 To illustrate the notion of leakage bandwidth in **leakage bandwidth**, we can take a relatively simple SETUP mechanism in RSA. Let's suppose Alice and Bob try to communicate securely with RSA. Eve is the passive attacker who has contaminated the RSA system and that system is being used by the two others. Thus let (d,n) and (e,n) be the keys generated by Alice who will receive a message by Bob.
 
@@ -131,7 +138,9 @@ Let (D, N) and (E, N) be Eve's keys, respectively private and public keys. Eve's
 
 ##### Algorithm of the attack
 
-Normally in RSA, we randomly generate the exponent e such that $1 < e < \phi(n)$ and $gcd(e, \phi(n)) = 1$. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from $\{ 0, 1\}^k$. Here the idea of the attack is to derivate the value of the Alice's exponent e from $p^E(mod N)$. Finally, d is as usual computed from e by taking its multiplicative inverse modulus $\phi(n)$. Here is a comparison between the normal RSA and the contaminated one:
+//TODO indiquer que e est normalement choisi mais qu'on peut aussi l'avoir aléatoire 
+
+Normally in RSA, we randomly generate the exponent e such that $1 < e < \phi(n)$ and $gcd{(e, \phi(n))} = 1$. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from $\{ 0, 1\}^k$. Here the idea of the attack is to derivate the value of Alice's exponent e from $p^E(mod N)$. Finally, d is as usual computed from e by taking its multiplicative inverse modulus $\phi(n)$. Here is a comparison between the normal RSA and the contaminated one:
 
 | RSA key generation algorithm      | SETUP RSA key generation algorithm for victim | SETUP RSA key generation algorithm for attacker |
 | --------------------------------- | --------------------------------------------- | ----------------------------------------------- |
@@ -144,7 +153,7 @@ Normally in RSA, we randomly generate the exponent e such that $1 < e < \phi(n)$
 
 
 
-Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing $p \equiv e^D \mod(N) = (p^E)^D \mod(N) = p \mod(N)$  since the parameter n is public. Then she can compute $\phi(n)$ and finally find $d \equiv e^-1 \mod(\phi(n))$, Alice's private key and decrypt all messages Bob sends to her. 
+Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing $p \equiv e^D \mod(N) = (p^E)^D \mod(N) = p \mod(N)$  since the parameter n is public. Then she can compute $\phi(n)$ and finally find $d \equiv e^{-1} \mod(\phi(n))$, Alice's private key and decrypt all messages Bob sends to her. 
 
 It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption of Bob to obtain the prime p. 
 
@@ -197,6 +206,20 @@ Eve has decrypted Bobs message: 7210533
 ##### Security of the attack
 
 One criticism that can be made of this attack is that it is not very realistic given the values that the exponent e can take, indeed, e is too large compared to the values of the modulus n. This implies in our scenario that if Alice expects rather small values of e, she will easily realize the deception. We can notice it in the previous example, we see that the exponent is 2410382527 while n is 1928624021. In their article [^fn5], Yung and Young point out that this is what happens in the case of PGP, the exponent being of the order of 5 bits.
+
+//TODO mieux expliquer pour PGP
+
+#### SETUP RSA II
+
+**//TODO**
+
+
+
+#### SETUP El Gamal signatures
+
+
+
+
 
 
 
@@ -308,3 +331,7 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 [^fn3]: Subvert KEM to Break DEM:Practical Algorithm-Substitution Attacks on Public-Key Encryption
 [^fn4]:  Kleptography: Using Cryptography Against Cryptography
 [^fn5]:The Dark Side of “Black-Box’’ Cryptography or: Should We Trust Capstone?
+[]: https://connect.ed-diamond.com/MISC/MISC-084/Surveillance-generalisee-DualECDRBG-10-ans-apres
+
+[]: https://en.wikipedia.org/wiki/Dual_EC_DRBG#cite_note-wired-schneier-4
+
