@@ -1,3 +1,4 @@
 /doc
 *.sage.py
 *.pdf
+/jcryptool
