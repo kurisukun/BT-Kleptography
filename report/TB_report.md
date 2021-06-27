@@ -77,12 +77,12 @@ A more formal definition as been given by Yung and Young in their article [^fn4]
 
 If we take this definition point by point, we can bring up several things:
 
-- The first point shows that a user must be able to use C' in the same way as he uses C. This means that the parameters taken as input by C' must not be different from C otherwise it could make the user suspicious.
-- The second point implies that the computation time of C' does not differ significantly from that of C. This is important because a user may feel that something is wrong if C' takes for example twice as much time as C.
-- According to the third point, since only the attacker knows and has access to a decryption function D, only he can decrypt the leaked information.
-- The form of the output of the two algorithms must not be different, if the user expects, for example, a 256 bits length output, then the output of C' must also be 256 bits long for the fourth point. In addition, the attacker must be able to retrieve the hidden information from the user's key.
-- In fifth, a user must not be able to distinguish the output of C and C' in polynomial time with reasonable computational capacity.
-- Finally, if the user discovers that the system is contaminated using reverse-engineering, it is still impossible for the user to recover past or future information from the private key using his study of the system. 
+1. The first point shows that a user must be able to use C' in the same way as he uses C. This means that the parameters taken as input by C' must not be different from C otherwise it could make the user suspicious.
+2. The second point implies that the computation time of C' does not differ significantly from that of C. This is important because a user may feel that something is wrong if C' takes for example twice as much time as C.
+3. According to the third point, since only the attacker knows and has access to a decryption function D, only he can decrypt the leaked information.
+4. The form of the output of the two algorithms must not be different, if the user expects, for example, a 256 bits length output, then the output of C' must also be 256 bits long for the fourth point. In addition, the attacker must be able to retrieve the hidden information from the user's key.
+5. In fifth, a user must not be able to distinguish the output of C and C' in polynomial time with reasonable computational capacity.
+6. Finally, if the user discovers that the system is contaminated using reverse-engineering, it is still impossible for the user to recover past or future information from the private key using his study of the system. 
 
 It is important to note that for Yung and Young, this last point is really only important for the formal definition of what they call a *strong SETUP* and not for *regular SETUP* as seen previously.
 
@@ -98,7 +98,13 @@ As Yung and Young say in their paper [^fn4], this form of SETUP may seem insecur
 
 #### Strong SETUP definition
 
+As we have seen, in regular SETUP devices, we assume that the cryptosystem acts as a black-box with the exception of the condition 6 (**METTRE LIEN ICI**).  This last condition raises an interesting property to note. This means if we have two different algorithms, one legit and an other one which is contaminated, the respective outputs of the algorithms C and C' are polynomially indistinguishable, and according to Yung and Young, this a necessary condition to obtain polynomial indistiguishability between the different past and future keys. From there, for the definition of the strong SETUP, Yung and Young assume that the contaminated device sometimes uses the normal algorithm and sometimes the SETUP. We therefore have [^fn4]:  
+
 > A strong setup is a regular setup, but in addition we assume that the users are able to hold and fully reverse-engineer the device after its past usage and before its future usage. They are able to analyze the actual implementation of C’ and deploy the device. However, the users still cannot steal previously generated/future generated keys, and if the setup is not always applied to future keys, then setup-free keys and setup keys remain polynomially indistinguishable.
+
+Again, this means that an user who has totally reverse-engineered the contaminated device but not obtain the attacker's key and random choices. Even if he manages to know which functions and fixed values are in the code and all of this done before and after every use of the device, the user still would not be able to recompute the keys that were generated. Even worse, as the strong SETUP sometimes uses the normal algorithm and sometimes not, the user does not know which generated keys contain some information as it is assumed that the device doesn't keep information of when the SETUP is used or not used. 
+
+This form of SETUP is much safer than the weak version since the system doesn't need to be a black-box cryptosystem. 
 
 
 
