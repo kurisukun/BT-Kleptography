@@ -34,8 +34,6 @@ E.set_order(n)
 
 G = E(FF(Gx), FF(Gy))
 
-# Return this value 
-NONCE = ""
 CTR = 0
 
 
@@ -140,25 +138,24 @@ def asa_rec(pk, ssk, Ci, Ci_prev):
 #Use AES GCM SIV à la place de CTR
 def asa_encrypt(keys, m):
 	(kE, kM) = (keys[32:],keys[:32])
-	cipher = AES.new(kE, AES.MODE_CTR)
-	global NONCE 
-	NONCE = b64encode(cipher.nonce).decode('utf-8')
+	cipher = AES.new(kE, AES.MODE_CTR) 
+	n = b64encode(cipher.nonce).decode('utf-8')
 	c = cipher.encrypt(m)
 	#h_mac = hmac.new(kM, c, hashlib.sha256)
 	#tag = h_mac.digest() 
-	return c
+	return (c, n)
 
-def asa_decrypt(k, c):
+def asa_decrypt(k, c, n):
 	(R, ciphertext) = c
 	keys = H(str((k * R).xy()).encode('utf-8'))
 	(kE, kM) = (keys[32:], keys[:32])
-	n = b64decode(NONCE)
+	n = b64decode(n)
 	aes = AES.new(kE, AES.MODE_CTR, nonce=n)
 	return aes.decrypt(ciphertext)
 
-def asa_decrypt_broken(keys, ciphertext):
+def asa_decrypt_broken(keys, ciphertext, n):
 	(kE, kM) = (keys[32:], keys[:32])
-	n = b64decode(NONCE)
+	n = b64decode(n)
 	aes = AES.new(kE, AES.MODE_CTR, nonce=n)
 	return aes.decrypt(ciphertext)
 
@@ -170,19 +167,19 @@ m1 = b"ecies is great"
 print(f'Message1 = {m1}')
 (Ki1, Ci1, tag) = asa_enc(ecies_K, psk, 0)
 print(f'Ki1 = {Ki1}\nCi1 = {Ci1}\ntag = {tag}')
-c1 = asa_encrypt(Ki1, m1)
+(c1, n1) = asa_encrypt(Ki1, m1)
 print(f'Ciphertext1 = {c1}')
-m1_decrypted = asa_decrypt(ecies_k, (Ci1, c1))
+m1_decrypted = asa_decrypt(ecies_k, (Ci1, c1), n1)
 print(f'M1 decrypted = {m1_decrypted}')
 
 m2 = b"ecies can be a ASA <3"
 print(f'Message2 = {m2}')
 (Ki2, Ci2, tag) = asa_enc(ecies_K, psk, tag)
 print(f'Ki2 = {Ki2}\nCi2 = {Ci2}\ntag = {tag}')
-c2 = asa_encrypt(Ki2, m2)
+(c2, n2) = asa_encrypt(Ki2, m2)
 
 Ki2_comp = asa_rec(ecies_K, ssk, Ci2, Ci1)
 print(f'Ki2 subversively obtained: {Ki2_comp}. Equals previous Ki? {Ki2 == Ki2_comp}')
 #As we have (kE||kM), we don't need kpriv here and can decrypt the message!
-m2_broken = asa_decrypt_broken(Ki2_comp, c2)
-print(f'We can obtain all next messages: {m2_broken}')
+m2_broken = asa_decrypt_broken(Ki2_comp, c2, n2)
+print(f'We can obtain all next messages. For example we find Message2: {m2_broken}')
