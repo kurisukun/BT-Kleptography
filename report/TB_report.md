@@ -98,7 +98,7 @@ As Yung and Young say in their paper [^fn4], this form of SETUP may seem insecur
 
 #### Strong SETUP definition
 
-As we have seen, in regular SETUP devices, we assume that the cryptosystem acts as a black-box with the exception of the condition 6 (**METTRE LIEN ICI**).  This last condition raises an interesting property to note. This means if we have two different algorithms, one legit and an other one which is contaminated, the respective outputs of the algorithms C and C' are polynomially indistinguishable, and according to Yung and Young, this a necessary condition to obtain polynomial indistiguishability between the different past and future keys. From there, for the definition of the strong SETUP, Yung and Young assume that the contaminated device sometimes uses the normal algorithm and sometimes the SETUP. We therefore have [^fn4]:  
+As we have seen, in regular SETUP devices, we assume that the cryptosystem acts as a black-box with the exception of the condition 6.  This last condition raises an interesting property to note. This means if we have two different algorithms, one legit and an other one which is contaminated, the respective outputs of the algorithms C and C' are polynomially indistinguishable, and according to Yung and Young, this a necessary condition to obtain polynomial indistiguishability between the different past and future keys. From there, for the definition of the strong SETUP, Yung and Young assume that the contaminated device sometimes uses the normal algorithm and sometimes the SETUP. We therefore have [^fn4]:  
 
 > A strong setup is a regular setup, but in addition we assume that the users are able to hold and fully reverse-engineer the device after its past usage and before its future usage. They are able to analyze the actual implementation of C’ and deploy the device. However, the users still cannot steal previously generated/future generated keys, and if the setup is not always applied to future keys, then setup-free keys and setup keys remain polynomially indistinguishable.
 
@@ -146,7 +146,7 @@ Let (D, N) and (E, N) be Eve's keys, respectively private and public keys. Eve's
 
 //TODO indiquer que e est normalement choisi mais qu'on peut aussi l'avoir aléatoire 
 
-Normally in RSA, we randomly generate the exponent e such that $1 < e < \phi(n)$ and $gcd{(e, \phi(n))} = 1$. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from $\{ 0, 1\}^k$. Here the idea of the attack is to derivate the value of Alice's exponent e from $p^E(mod N)$. Finally, d is as usual computed from e by taking its multiplicative inverse modulus $\phi(n)$. Here is a comparison between the normal RSA and the contaminated one:
+Normally in RSA, we randomly generate the exponent e such that 1 < e < phi(n) and gcd{(e, phi(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from \{ 0, 1\}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus phi(n). Here is a comparison between the normal RSA and the contaminated one:
 
 | RSA key generation algorithm      | SETUP RSA key generation algorithm for victim | SETUP RSA key generation algorithm for attacker |
 | --------------------------------- | --------------------------------------------- | ----------------------------------------------- |
@@ -221,7 +221,98 @@ One criticism that can be made of this attack is that it is not very realistic g
 
 
 
+
+
 #### SETUP El Gamal signatures
+
+Yung and Young proposed a way to add a SETUP mechanism to the cryptosystem El Gamal both for its encryption method and for its signature method. It is this last one that will interest us here. 
+
+**//TODO changer si El Gamal change souvent ses paramètres publiques**
+
+The attacker's keys are generated as for a classical El Gamal signature and the public parameters of the attacker are also the ones of the user. In their SETUP in the El Gamal cipher, Yung and Young had made the cipher algorithm change these public parameters every time, which is less realistic than here where they remain constant. 
+
+
+
+##### Algorithm of the attack
+
+As for a classical El Gamal, we define a prime number p and a generator g of $\Z^*_p$ for the user and for the attacker. Then let X ∈ {1, 2, ..., p-1} be the attacker's private key and Y ≡ g^X (mod p) his public key. Let then x be the user's private key and y the corresponding public key generated as the attacker's one.   
+
+Given the scenario where Alice wants to authenticate a message she sends, she will send the triplet (m, r, s) to Bob where m is actually the hash of the message and r and s form the signature. To perform this attack, Eve needs to get two consecutive signatures, two triplets (m1, r1, s1) and (m2, r2, s2), from Alice. These signatures are computed as follows:
+
+
+
+1. Using the normal condition of El Gamal signature scheme, a random integer ki is randomly generated from {1, 2, ..., p-2} such that gcd(ki, p-1) = 1.
+
+2. Then the first signature is computed as follows:
+
+    ri ≡ g^ki (mod p)
+    si ≡ ki^−1 (mi − x · ri) (mod p−1),
+
+   Then the program outputs the triplet (mi, ri, si)
+
+3. The second signature is then computed in a slightly different way. Instead of choosing ki+1 as before, Yung and Young choose its inverse to be a very specific value. So let c ≡ Y^ki (mod p) and then they compute c^-1. The existence of the inverse of integer c is possible if and only if:
+
+    gcd(c, p-1) = 1 									(1)
+
+   Finally if the previous condition and:
+
+   gcd(g^{ki+1}, p-1)								(2)	
+
+   then ki+1 is chosen to be congruent to c^-1 (mod p) and not randomly.
+
+   
+
+   If condition (1) and (2) are not satisfied, then ki+1 is randomly drawn such that ki+1 ∈ {1, 2, ..., p - 2} and the normal El Gamal scheme is used instead, which implies that a proper signature is produced and can't be used by the attacker to recover Alice's private key.
+
+4. Finally, the signature is computed as before but using the new values:
+
+    ri+1 ≡ g^ki+1 (mod p)
+    si+1 ≡ ki+1^−1 (mi+1 − x · ri+1) (mod p−1)
+
+   and the program outputs the triplet (mi+1, ri+1, si+1)
+
+
+
+
+
+```
+######## Generation of parameters ########
+    p = 2985339977
+    g = 3
+
+######## ATTACKER  ########
+Eve generates her keys using g = 3 and p = 2985339977 as parameters
+    X = 900132350
+    Y ≡ g^X = 3^900132350 ≡ 420610444 (mod 2985339977)
+
+######## VICTIM  ########
+Alice generates her keys using g = 3 and p = 2985339977 as parameters
+    x = 2505378804 (THIS IS WHAT WE WANT)
+    y ≡ g^x = 3^2505378804 ≡ 1879808802 (mod 2985339977)
+
+Alice wants to send the message: HI
+encoded message: 7273
+
+Alice generates the first signature:
+    Generation of k1 = 1349780493 such that gcd(k1, p-1) = 1
+    r1 ≡ g^k1 = 3^1349780493 ≡ 1938591453 (mod 2985339977)
+    s1 ≡ k1^−1(m1 − x · r1 ) ≡ 2428867389(7273 - 2505378804·1938591453) ≡ 2763441185 (mod 2985339976)
+m = 7273 r = 1938591453 s = 2763441185
+Alice now wants to send the message: OK
+encoded message: 7975
+
+Alice generates the second signature:
+c ≡ Y^k1 ≡ 420610444^1349780493 ≡ 374675777 (mod 2985339977)
+    k2 ≡ c^-1 ≡ 1940063001 (mod 2985339976)
+    r2 ≡ g^k2 = 3^1940063001 ≡ 1963246825 (mod 2985339977)
+    s2 ≡ k2^−1(m2 − x · r2 ) ≡ 374675777(7975 - 2505378804·1963246825) ≡ 1585425891 (mod 2985339976)
+######## SETUP ATTACK ########
+Eve attacks Alice private key: 
+Key recovery: 7975  1963246825  1585425891
+    She computes c ≡ ri^X (mod 2985339977) ≡ 1938591453^900132350 (mod 2985339977 ≡ 374675777 (mod 2985339977))
+    x = r2^-1 (m2 - s2//c) = 1963246825^-1 (7975 - 1585425891//374675777)
+    Alice private key obtained: 2505378804
+```
 
 
 
