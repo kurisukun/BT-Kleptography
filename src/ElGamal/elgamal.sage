@@ -25,10 +25,10 @@ def gen_first_signature(g, m, p, x):
     while gcd(k, p-1) != 1: 
         k = ZZ.random_element(1, p-2)
     
-    print(f'    Generation of k1 = {k} such that gcd(k1, P-1) = 1')
+    print(f'    Generation of k1 = {k} such that gcd(k1, p-1) = 1')
 
     r = power_mod(g, k, p)
-    print(f'    r1 ≡ G^k1 = {g}^{k} ≡ {r} (mod {p})')
+    print(f'    r1 ≡ g^k1 = {g}^{k} ≡ {r} (mod {p})')
     s = (inverse_mod(k, p-1) * (m - x * r)) % (p-1)
     print(f'    s1 ≡ k1^−1(m1 − x · r1 ) ≡ {inverse_mod(k, p-1)}({m} - {x}·{r}) ≡ {s} (mod {p-1})')
     return (m, r, s, k)
@@ -57,7 +57,7 @@ def gen_second_signature(g, k, m, p, x, Y):
     print(f'    k2 ≡ c^-1 ≡ {k_next} (mod {p-1})')
 
     r_next = power_mod(g, k_next, p)
-    print(f'    r2 ≡ G^k2 = {g}^{k_next} ≡ {r_next} (mod {p})')
+    print(f'    r2 ≡ g^k2 = {g}^{k_next} ≡ {r_next} (mod {p})')
     s_next = (inverse_mod(int(k_next), p-1) * (m - x * r_next)) % (p-1)
     print(f'    s2 ≡ k2^−1(m2 − x · r2 ) ≡ {inverse_mod(k_next, p-1)}({m} - {x}·{r_next}) ≡ {s_next} (mod {p-1})\n')
     return (m, r_next, s_next)
@@ -78,20 +78,20 @@ def key_recovery(r, s, p, X):
 
 
 print(f'######## Generation of parameters ########')
-(P, G) = elgamal_parameters_gen(32)
-print(f'    P = {P}')
-print(f'    G = {G}\n')
+(p, g) = elgamal_parameters_gen(32)
+print(f'    p = {g}')
+print(f'    g = {g}\n')
 print(f'######## ATTACKER  ########')
-print(f'Eve generates her keys using G={G} and P={P} as parameters')
-(X, Y) = elgamal_key_gen(G, P)
+print(f'Eve generates her keys using g = {g} and p = {p} as parameters')
+(X, Y) = elgamal_key_gen(g, p)
 print(f'    X = {X}')
-print(f'    Y ≡ g^X = {G}^{X} ≡ {Y} (mod {P})\n')
+print(f'    Y ≡ g^X = {g}^{X} ≡ {Y} (mod {p})\n')
 
 print(f'######## VICTIM  ########')
-print(f'Alice generates her keys using G={G} and P={P} as parameters')
-(x, y) = elgamal_key_gen(G, P)
+print(f'Alice generates her keys using g = {g} and p = {p} as parameters')
+(x, y) = elgamal_key_gen(g, p)
 print(f'    x = {x} (THIS IS WHAT WE WANT)')
-print(f'    y ≡ g^x = {G}^{x} ≡ {y} (mod {P})\n')
+print(f'    y ≡ g^x = {g}^{x} ≡ {y} (mod {p})\n')
 
 
 m1 = "HI"
@@ -99,7 +99,7 @@ print(f'Alice wants to send the message: {m1}')
 encoded_message = encode_message(m1)
 print(f'encoded message: {encoded_message}\n')
 print(f'Alice generates the first signature:')
-(_m, r, s, k) = gen_first_signature(G, encoded_message, P, x)
+(_m, r, s, k) = gen_first_signature(g, encoded_message, p, x)
 print(f'm = {_m} r = {r} s = {s}')
 
 m2 = "OK"
@@ -108,9 +108,9 @@ encoded_message = 1511
 encoded_message = encode_message(m2)
 print(f'encoded message: {encoded_message}\n')
 print(f'Alice generates the second signature:')
-(_m, r_next, s_next) = gen_second_signature(G, k, encoded_message, P, x, Y)
+(_m, r_next, s_next) = gen_second_signature(g, k, encoded_message, p, x, Y)
 
 print(f'######## SETUP ATTACK ########')
 print(f'Eve attacks Alice private key: ')
-k_priv = key_recovery(r, (_m, r_next, s_next), P, X)
+k_priv = key_recovery(r, (_m, r_next, s_next), p, X)
 print(f'    Alice private key obtained: {k_priv}')
