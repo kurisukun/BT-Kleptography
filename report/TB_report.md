@@ -246,17 +246,17 @@ Given the scenario where Alice wants to authenticate a message she sends, she wi
 2. Then the first signature is computed as follows:
 
     ri ≡ g^ki (mod p)
-    si ≡ ki^−1 (mi − x · ri) (mod p−1),
+    si ≡ ki^{−1} (mi − x · ri) (mod p−1),
 
    Then the program outputs the triplet (mi, ri, si)
 
-3. The second signature is then computed in a slightly different way. Instead of choosing ki+1 as before, Yung and Young choose its inverse to be a very specific value. So let c ≡ Y^ki (mod p) and then they compute c^-1. The existence of the inverse of integer c is possible if and only if:
+3. The second signature is then computed in a slightly different way. Instead of choosing k{i+1} as before, Yung and Young choose its inverse to be a very specific value. So let c ≡ Y^{ki} (mod p) and then they compute c^{-1}. The existence of the inverse of integer c is possible if and only if:
 
-    gcd(c, p-1) = 1 									(1)
+    gcd(c, p-1) = 1 																									   (1)
 
    Finally if the previous condition and:
 
-   gcd(g^{ki+1}, p-1)								(2)	
+   gcd(g^{k{i+1}, p-1)																								   (2)	
 
    then ki+1 is chosen to be congruent to c^-1 (mod p) and not randomly.
 
@@ -266,12 +266,46 @@ Given the scenario where Alice wants to authenticate a message she sends, she wi
 
 4. Finally, the signature is computed as before but using the new values:
 
-    ri+1 ≡ g^ki+1 (mod p)
-    si+1 ≡ ki+1^−1 (mi+1 − x · ri+1) (mod p−1)
+    r{i+1} ≡ g^k{i+1} (mod p)
+    s{i+1} ≡ k{i+1}^{−1} (m{i+1} − x · r{i+1}) (mod p - 1)
 
-   and the program outputs the triplet (mi+1, ri+1, si+1)
+   and the program outputs the triplet (m{i+1}, r{i+1}, s{i+1}).
 
 
+
+Eve uses the two signatures  (mi, ri, si) and (m{i+1}, r{i+1}, s{i+1}) to obtain Alice's private key. First of all, the attacker computes:
+
+ri^X ≡ (g^{ki}) ^X ≡ g^(ki X) = (g^X) ^ ki ≡ Y^{ki} ≡ c (mod p)											  (3)
+
+where c is an integer included in {1, 2, ..., p-2}. 
+
+
+
+Before showing how we find the key, we need to remember the given relation:
+
+s{i+1} ≡ k{i+1}^{-1}· (m{i+1} − x · r{i+1}) (mod p - 1)  ≡ c ·  (m{i+1} - x · r{i+1}) (mod p - 1)			  (4)
+
+
+
+which we can rewrite as: 
+
+s{i+1} · c^-1 ≡  (m{i+1} - x · r{i+1}) (mod p - 1) 
+
+-s{i+1} · c^-1 ≡  x · r{i+1} - m{i+1} (mod p - 1) 																		    (5)
+
+
+
+Now by combining the following calculation:
+
+r{i+1}^-1 · (m{i+1} - s{i+1} · c^-1) (mod p - 1)
+
+and (5) and we now can obtain the private key:
+
+r{i+1}^-1 · (m{i+1} + (x · r{i+1} - m{i+1})) 
+
+r{i+1}^-1 · (m{i+1} -m{i+1} + x · r{i+1}) 
+
+r{i+1}^-1 · (x ·  r{i+1}) ≡ x (mod p - 1) 
 
 
 
