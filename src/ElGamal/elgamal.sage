@@ -8,7 +8,6 @@ def elgamal_parameters_gen(size):
     Fp = Integers(p)
     g = Fp.unit_gens()
     return (p, g[0])
-    
 
 def elgamal_key_gen(g, p):
     x = ZZ.random_element(1, p-2)
@@ -62,6 +61,15 @@ def gen_second_signature(g, k, m, p, x, Y):
     print(f'    s2 ≡ k2^−1(m2 − x · r2 ) ≡ {inverse_mod(k_next, p-1)}({m} - {x}·{r_next}) ≡ {s_next} (mod {p-1})\n')
     return (m, r_next, s_next)
 
+def verify_signature(p, g, y, m, r, s):
+    sig = power_mod(g, m, p)
+    print(f'    g^m ≡ {sig} (mod {p})')
+    sig_prime = (power_mod(y, r, p) * power_mod(r, s, p)) % p
+    print(f'    y^r · r^s ≡ {sig_prime} (mod {p})')
+    
+    return (sig == sig_prime)
+    
+
 
 def key_recovery(r, s, p, X):
     (m_next, r_next, s_next) = s
@@ -100,7 +108,10 @@ encoded_message = encode_message(m1)
 print(f'encoded message: {encoded_message}\n')
 print(f'Alice generates the first signature:')
 (_m, r, s, k) = gen_first_signature(g, encoded_message, p, x)
-print(f'm = {_m} r = {r} s = {s}')
+
+print(f'Bob verifies the signature with ({_m}, {r}, {s})')
+
+print(f'The signature corresponds: {verify_signature(p, g, y, _m, r, s)}')
 
 m2 = "OK"
 print(f'Alice now wants to send the message: {m2}')
@@ -109,6 +120,10 @@ encoded_message = encode_message(m2)
 print(f'encoded message: {encoded_message}\n')
 print(f'Alice generates the second signature:')
 (_m, r_next, s_next) = gen_second_signature(g, k, encoded_message, p, x, Y)
+
+print(f'Bob verifies the signature with ({_m}, {r}, {s})')
+
+print(f'The signature corresponds: {verify_signature(p, g, y, _m, r_next, s_next)}')
 
 print(f'######## SETUP ATTACK ########')
 print(f'Eve attacks Alice private key: ')
