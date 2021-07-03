@@ -144,9 +144,9 @@ Let (D, N) and (E, N) be Eve's keys, respectively private and public keys. Eve's
 
 ##### Algorithm of the attack
 
-//TODO indiquer que e est normalement choisi mais qu'on peut aussi l'avoir aléatoire 
 
-Normally in RSA, we randomly generate the exponent e such that 1 < e < phi(n) and gcd{(e, phi(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from \{ 0, 1\}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus phi(n). Here is a comparison between the normal RSA and the contaminated one:
+
+Normally in RSA, we choose $e$ to be equal to $65'537$ in practice, but sometimes it happens we randomly generate the exponent e such that 1 < e < phi(n) and gcd{(e, phi(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from \{ 0, 1\}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus phi(n). Here is a comparison between the normal RSA and the contaminated one:
 
 | RSA key generation algorithm      | SETUP RSA key generation algorithm for victim | SETUP RSA key generation algorithm for attacker |
 | --------------------------------- | --------------------------------------------- | ----------------------------------------------- |
@@ -164,6 +164,8 @@ Because of how Alice's exponent is generated, Eve can easily factor modulus n by
 It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption of Bob to obtain the prime p. 
 
 Here is the sequence of a message exchange between Alice and Bob and the implementation of the attack by Eve (see **Indicate index** for the corresponding code): 
+
+**Example 1:**
 
 ```python
 ######## ATTACKER ########
@@ -250,6 +252,8 @@ Given the scenario where Alice wants to authenticate a message she sends, she wi
 
    Then the program outputs the triplet (mi, ri, si)
 
+   The step where s is calculated requires the calculation of the inverse of k. This computation is only possible because we have made sure by drawing k that gcd(k, p-1) = 1. 
+
 3. The second signature is then computed in a slightly different way. Instead of choosing k{i+1} as before, Yung and Young choose its inverse to be a very specific value. So let c ≡ Y^{ki} (mod p) and then they compute c^{-1}. The existence of the inverse of integer c is possible if and only if:
 
     gcd(c, p-1) = 1 																									   (1)
@@ -258,7 +262,7 @@ Given the scenario where Alice wants to authenticate a message she sends, she wi
 
    gcd(g^{k{i+1}, p-1)																								   (2)	
 
-   then ki+1 is chosen to be congruent to c^-1 (mod p) and not randomly.
+   then ki+1 is chosen to be congruent to c^-1 (mod p) and not randomly. The fact that c is used for calculating k{i+1} makes c ∈ {1, 2, ..., p-2}. The choice of the upper bound that is p-2 and not p-1 is explained by the fact that if c = p-1, then we would have gcd(p-1, p-1) = p-1 != 1.
 
    
 
@@ -272,6 +276,12 @@ Given the scenario where Alice wants to authenticate a message she sends, she wi
    and the program outputs the triplet (m{i+1}, r{i+1}, s{i+1}).
 
 
+
+
+
+
+
+##### Recovering the private key
 
 Eve uses the two signatures  (mi, ri, si) and (m{i+1}, r{i+1}, s{i+1}) to obtain Alice's private key. First of all, the attacker computes:
 
@@ -297,7 +307,7 @@ s{i+1} · c^-1 ≡  (m{i+1} - x · r{i+1}) (mod p - 1)
 
 Now by combining the following calculation:
 
-r{i+1}^-1 · (m{i+1} - s{i+1} · c^-1) (mod p - 1)
+r{i+1}^-1 · (m{i+1} - s{i+1} · c^-1) (mod p - 1)																				(6)
 
 and (5) and we now can obtain the private key:
 
@@ -307,50 +317,91 @@ r{i+1}^-1 · (m{i+1} -m{i+1} + x · r{i+1})
 
 r{i+1}^-1 · (x ·  r{i+1}) ≡ x (mod p - 1) 
 
+For this to work, the attacker needs to inverse r{i+1} (mod p-1), and for the latter to exist, as before, we must show that gcd(r{i+1}, p) = 1. And given that k ≡ c, then r{i+1} ≡ g^k{i+1} ≡ g^ {c^{-1}} (mod p). So from this, we have that:
+gcd(g^ c^{-1} (mod p), p - 1) = 1
 
+which explains the need for condition (2). 
+
+Eve therefore knows when she does the calculations that if gcd(r{i+1}, p-1) =! 1, then k{i+1} =! c^{-1} and therefore she cannot use the signature pair to find the private key. 
+
+
+
+In the **example 2**, we have a step-by-step example of the attack can be found. First, we show the different parameters being generated for Alice and Eve. Then we see the computation of the first signature (m1, r1, s1) by Alice and the verification of it by Bob. Alice signs an other message afterwards to send it to Bob and produces the triplet (m2, r2, s2) which is also verifies by Bob. In the end, the sequence shows how Eve recovers Alice's private key x using both signatures previously calculated.  
+
+**Example 2:**
 
 ```
 ######## Generation of parameters ########
-    p = 2985339977
-    g = 3
+    p = 2
+    g = 2
 
 ######## ATTACKER  ########
-Eve generates her keys using g = 3 and p = 2985339977 as parameters
-    X = 900132350
-    Y ≡ g^X = 3^900132350 ≡ 420610444 (mod 2985339977)
+Eve generates her keys using g = 2 and p = 4282531469 as parameters
+    X = 863261721
+    Y ≡ g^X = 2^863261721 ≡ 3384084900 (mod 4282531469)
 
 ######## VICTIM  ########
-Alice generates her keys using g = 3 and p = 2985339977 as parameters
-    x = 2505378804 (THIS IS WHAT WE WANT)
-    y ≡ g^x = 3^2505378804 ≡ 1879808802 (mod 2985339977)
+Alice generates her keys using g = 2 and p = 4282531469 as parameters
+    x = 4252958629 (THIS IS WHAT WE WANT)
+    y ≡ g^x = 2^4252958629 ≡ 88565237 (mod 4282531469)
 
 Alice wants to send the message: HI
 encoded message: 7273
 
 Alice generates the first signature:
-    Generation of k1 = 1349780493 such that gcd(k1, p-1) = 1
-    r1 ≡ g^k1 = 3^1349780493 ≡ 1938591453 (mod 2985339977)
-    s1 ≡ k1^−1(m1 − x · r1 ) ≡ 2428867389(7273 - 2505378804·1938591453) ≡ 2763441185 (mod 2985339976)
-m = 7273 r = 1938591453 s = 2763441185
+    Generation of k1 = 1318625155 such that gcd(k1, p-1) = 1
+    r1 ≡ g^k1 = 2^1318625155 ≡ 1368264974 (mod 4282531469)
+    s1 ≡ k1^−1(m1 − x · r1 ) ≡ 1048024771(7273 - 4252958629·1368264974) ≡ 1049540629 (mod 4282531468)
+Bob verifies the signature with (7273, 1368264974, 1049540629)
+    g^m ≡ 1001303893 (mod 4282531469)
+    y^r · r^s ≡ 1001303893 (mod 4282531469)
+The signature corresponds: True
 Alice now wants to send the message: OK
 encoded message: 7975
 
 Alice generates the second signature:
-c ≡ Y^k1 ≡ 420610444^1349780493 ≡ 374675777 (mod 2985339977)
-    k2 ≡ c^-1 ≡ 1940063001 (mod 2985339976)
-    r2 ≡ g^k2 = 3^1940063001 ≡ 1963246825 (mod 2985339977)
-    s2 ≡ k2^−1(m2 − x · r2 ) ≡ 374675777(7975 - 2505378804·1963246825) ≡ 1585425891 (mod 2985339976)
+c ≡ Y^k1 ≡ 3384084900^1318625155 ≡ 2498434343 (mod 4282531469)
+    k2 ≡ c^-1 ≡ 2629132439 (mod 4282531468)
+    r2 ≡ g^k2 = 2^2629132439 ≡ 2894982921 (mod 4282531469)
+    s2 ≡ k2^−1(m2 − x · r2 ) ≡ 2498434343(7975 - 4252958629·2894982921) ≡ 3974137686 (mod 4282531468)
+
+Bob verifies the signature with (7975, 1368264974, 1049540629)
+    g^m ≡ 2466722170 (mod 4282531469)
+    y^r · r^s ≡ 2466722170 (mod 4282531469)
+The signature corresponds: True
 ######## SETUP ATTACK ########
 Eve attacks Alice private key: 
-Key recovery: 7975  1963246825  1585425891
-    She computes c ≡ ri^X (mod 2985339977) ≡ 1938591453^900132350 (mod 2985339977 ≡ 374675777 (mod 2985339977))
-    x = r2^-1 (m2 - s2//c) = 1963246825^-1 (7975 - 1585425891//374675777)
-    Alice private key obtained: 2505378804
+Key recovery: 7975  2894982921  3974137686
+    She computes c ≡ ri^X (mod 4282531469) ≡ 1368264974^863261721 (mod 4282531469 ≡ 2498434343 (mod 4282531469))
+    x = r2^-1 (m2 - s2//c) = 2894982921^-1 (7975 - 3974137686//2498434343)
+    Alice private key obtained: 4252958629
 ```
 
 
 
+##### Security of the attack
 
+This attack still has a high chance of failing because of all the conditions 2 and 3 that we saw earlier. Indeed, let a and b be two random integers, then:
+
+P(gcd(a, b) = 1) = 6/pi^2
+
+The proof of this result can be found in  [^fn6]. Let's assume now that our randomly drawn integers are c and p-1, it means that P(gcd(c, p-1) = 1) = 6/pi^2, same for g^ {c^{-1}} and p-1. So for the generation of a single pair of signatures, we have then:
+
+P(gcd(c, p-1) = 1) and P(gcd( g^ {c^{-1}}, p-1) = 1) =  (6/pi^2)  ^2. 		(7)
+
+This means Eve has approximatively 37% chance of getting an useful pair of signatures that permit to attack an user's private key, which is not that good. However, we can show that producing more signatures increases the chances of getting an useful pair of signatures. 
+
+Let's assume that Eve wants to generate a bigger number of pairs of signatures, let's that number be 10. The probability that all 10 pairs of signatures are not useful for Eve is given by:
+
+P(10 pairs of signatures are not useful) = (1 - (6/pi^2) ^2) ^10 ≃ 0.0099
+
+by using the previous result (7).
+
+This means that Eve has a probability of getting at least one 1 useful pair out of 4 pairs of signatures is given by:
+
+P(1 pair out of 4 pairs of signatures is useful) = 1 - (1 - (6/pi^2) ^2) ^10  ≃ 1 - 0.0099  ≃ 0.99.
+
+which greatly increased the chances of using the SETUP for Eve.
 
 
 
@@ -457,12 +508,21 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 
 
 
+```python
+
+```
+
 [^fn1]: http://rump2007.cr.yp.to/15-shumow.pdf
 [^fn2]: Security of Symmetric Encryption
 [^fn3]: Subvert KEM to Break DEM:Practical Algorithm-Substitution Attacks on Public-Key Encryption
 [^fn4]:  Kleptography: Using Cryptography Against Cryptography
 [^fn5]:The Dark Side of “Black-Box’’ Cryptography or: Should We Trust Capstone?
+[^fn6]: Problems from the Discrete to the Continuous. Probability, Number Theory, Graph Theory, and Combinatorics
+[^fn7]: https://en.wikipedia.org/wiki/Coprime_integers#Probabilities
+
 []: https://connect.ed-diamond.com/MISC/MISC-084/Surveillance-generalisee-DualECDRBG-10-ans-apres
 
 []: https://en.wikipedia.org/wiki/Dual_EC_DRBG#cite_note-wired-schneier-4
+
+
 
