@@ -433,6 +433,8 @@ The attack goes as follow:
 
    and represents the output of the device. As Yung and Young say in their article, the value the private key x1 is stored for the next time the device will be used, and only this one time.
 
+   Now that Alice's device has output the public key y1, she can send it to Bob who in turn has also generated its respective keys. After this, Alice and Bo can compute their shared secret which will permit them to communicate with confidentiality. But if we assume that Alice and Bob want to chance their respective keys, or that Alice wants to send messages securely with a completely different user Carol. 
+
 2. For the second usage, the private key x2 is not randomly chosen, it is constructed with the use of multiple integers:
 
    - First of all, an integer t is chosen uniformly at random from {0, 1}. 
@@ -451,13 +453,83 @@ The attack goes as follow:
 
      y2 ≡ g^x2 (mod p)									(4) 
 
-   - 
-
-3.   
+   Because of how we generated x2, x1 has been put inside of it and the attacker only has to use both public keys to recover Alice's second private key.
 
 
 
 ##### Recovering the private key
+
+Let y1 and y2 be Alice's public key that will allow Eve to get Alice's second private key. Let p and g be the public parameters for the Diffie-Hellman key exchange and a, b and W the fixed parameters that Eve knows because she's the one who chose them. Finally, Eve is the only person who knows the value of X, her private key. The recovery is performed as follows:
+
+
+
+1. First Eve computed the value:
+
+   r ≡ y1^a · g^b (mod p). 									(5)
+
+2. Then Eve uses this value in conjunction with y1, y2 and X to calculate:
+
+   z1 ≡ y1/r^X (mod p)											(6)
+
+3. Then if 
+
+   y2 ≡ g^H(z1) (mod p)										  (7)
+
+   then the program outputs H(z1) = x2 and the task is done.
+
+4. Otherwise, Eve computes: 
+
+   z2 ≡ z1/g^W (mod p)											(8)
+
+   which implies that y2 ≡ g^H(z2) and then the program outputs H(z2) = x2.
+
+   
+
+Let's show that this result truly gives us the private key x2. For this, equations (1), (5) and (6) are used:
+
+z1≡ y1/r^X
+
+​	≡ g^x1 / (y1^a · g^b) ^X
+
+​	≡ g^x1 / ((g^x1 )^a · g^b) ^X
+
+​	≡ g^x1 / (g^{a·x1 + b} )^X
+
+​	≡ g^x1 · g^{-a·x1  - b}^X
+
+​	≡ g^x1 · ( g^X )^{-a·x1  - b}
+
+​	≡ g^x1 · Y^{-a·x1  - b} (mod p) 								(9)
+
+
+
+As we can see, equation (9) is the same as equation (2) for t = 0 and implies that z1 = z and therefore x2 = H(z1). Also, note that condition (7) is explained by the fact that :
+
+y2 ≡ g^x2 ≡ g^H(z) ≡ g^H(z1) (mod p).
+
+On the other hand, if the device were to have drawn t = 1, then an additional calculus has to be done by using equations (9) and (8):
+
+z2≡ z1 / g^W
+
+​	≡ (g^x1 · Y^{-a·x1  - b}) / g^W
+
+​	≡ (g^x1 · Y^{-a·x1  - b}) · g^-W
+
+​	≡ (g^{x1-W} · Y^{-a·x1  - b})
+
+which is equal to equation (2) with t = 1 and implies that z2 = z and therefore x2 = H(z2). As before, note that the condition (3.25) is explained by the fact that:
+
+ y2 ≡ g^x2 ≡ g^H(z) ≡ g^H(z2) (mod p)
+
+
+
+##### Use of a, b and W
+
+An interesting point that remains to be raised before discussing the security of the attack is the reason for the existence of the integers a, b and W.
+
+
+
+
 
 ##### Securiy of the attack
 
