@@ -2,4 +2,5 @@
 *.sage.py
 *.pdf
 /jcryptool
+/pykleptool
 TODO

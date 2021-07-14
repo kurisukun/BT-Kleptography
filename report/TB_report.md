@@ -24,7 +24,7 @@ In our modern, ultra-connected world, we readily imagine that the world's great 
 
 ## State of the art
 
-In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP. They wanted to show the threats one can encounter when using a blackbox device such as smartcards and more recently mobile phones. Their article has refined the existing concepts of SETUP and provided new definitions of them. In addition, they proved that there are attacks that can leak the secret key of a blackbox system without the use of subliminal channels. With this paper and the proofs they made, Yung and Young introduced the concept of kleptography. 
+In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP. They wanted to show the threats one can encounter when using a black-box device such as smartcards and more recently mobile phones. Their article has refined the existing concepts of SETUP and provided new definitions of them. In addition, they proved that there are attacks that can leak the secret key of a black-box system without the use of subliminal channels. With this paper and the proofs they made, Yung and Young introduced the concept of kleptography. 
 
 As we will see further, what Yung and Young have showed is that kleptographic attacks can be considered as asymmetric backdoors. An attacker who implements the backdoor into a cryptosystem or cryptographic protocol is the only one who actually can have use of it. Furthermore, they showed that the output of that subverted cryptosystem is *computationally indistinguishable* compared to a faithful output. The asymmetric aspect also implies that even if anyone succeeds into reverse-engineering the subverted system, he can find that it's compromised but will not be able to use it, where a classic symmetric backdoor can be in turn used after its discovery.
 
@@ -404,6 +404,140 @@ This means that Eve has a probability of getting at least one 1 useful pair out 
 P(1 pair out of 4 pairs of signatures is useful) = 1 - (1 - (6/pi^2) ^2) ^10  ≃ 1 - 0.0099  ≃ 0.99.
 
 which greatly increased the chances of using the SETUP for Eve.
+
+
+
+### SETUP in Diffie-Hellman
+
+In their article[^fn4], Yung and Young explained that this SETUP attack would not follow the same concern as the previous ones. Previously, the objective was to produce an output that won't warn the user about the malicious nature of the device or give him any chance of using his properties either. This is why each SETUP we have seen until now created a subliminal channel with a known bandwidth for leaking private information inside the output of the cryptosystem. This time, the approach uses a SETUP attack in the discrete log.   
+
+Alice and Bob want to agree on a secret by using an insecure channel. For the recall, this is what the Diffie-Hellman permits to do. The protocol uses a large prime p and g a generator of Z*p as public parameters. Then to establish the shared secret, Alice and Bob randomly draw a private key x from {1, 2, ..., p-1} (as in El Gamal scheme) and compute their respective public key and send it to the other.
+
+For this attack, Yung and Young assume that Alice needs a brand new key pair every time a connection is established in the channel and will therefore require Alice to have a different x private key for each different user she wants to exchange with. In our example, Alice will have the key x1_a to communicate with Bob and the key x2_a to communicate with Carol.
+
+
+
+#### SETUP in Diffie-Hellman key exchange protocol
+
+##### Algorithm of the attack
+
+As it was described before, let's imagine that Alice and Bob want to communicate confidentially on a insecure channel so they use a Diffie-Hellman device to generate the required keys. The parameters p and g are kept constant in the device and it does not output anything else than the public key, the private key is secret. Finally let's assume that Alice's device has been contaminated by Eve, a malicious adversary. For this attack to be performed, Eve has written in Alice's device the following values: her private key Y, some constant integers a, b, and W and a cryptographically strong hash function H which outputs a hash value in {1, 2, ..., p-1}. 
+
+The attack goes as follow:
+
+
+
+1. For the first usage, x1 ∈ {1, 2, ..., p-1} is chosen randomly. This will be Alice's private key. Then her public key is computed as:
+
+   y1 ≡ g^x1 (mod p) 										(1)
+
+   and represents the output of the device. As Yung and Young say in their article, the value the private key x1 is stored for the next time the device will be used, and only this one time.
+
+2. For the second usage, the private key x2 is not randomly chosen, it is constructed with the use of multiple integers:
+
+   - First of all, an integer t is chosen uniformly at random from {0, 1}. 
+
+   - After that, the integer z is computed as:
+
+     z ≡ g^{x1-W·t} · Y^{-a·x1 - b} (mod p)   (2)
+
+     with a, b and W the fixed integers previously mentioned.
+
+   - Finally the hash function H is used to produce the new private x2:
+
+     x2 = H(z)													(3)
+
+     and followed by the new public key y2:
+
+     y2 ≡ g^x2 (mod p)									(4) 
+
+   - 
+
+3.   
+
+
+
+##### Recovering the private key
+
+##### Securiy of the attack
+
+
+
+**Example 3:**
+
+```
+######## Generation of parameters ########
+    p = 7
+    g = 7
+
+######## ATTACKER  ########
+Eve generates her keys using g = 7 and p = 2932727519 as parameters
+    X = 2593769209
+    Y ≡ g^X = 7^2593769209 ≡ 1915266573 (mod 2932727519)
+
+######## VICTIM  ########
+- First signature: Alice want to communicate with Bob -
+Alice generates her keys using g = 7 and p = 2932727519 as parameters
+    x1_a = 650788030 (What we are looking for)
+    y1_a ≡ g^x1_a = 7^650788030 ≡ 974455017 (mod 2932727519)
+
+Alice sends her public key to Bob
+Bob generates her keys using g = 7 and p = 2932727519 as parameters
+    x1_b = 2629330839
+    y1_b ≡ g^x1_b = 7^2629330839 ≡ 1194475180 (mod 2932727519)
+
+Bob sends his public key to Alice
+Alice and Bob can now both compute the shared secret
+    Alice by computing: s1 ≡ y1_b^x1_a = 2097992111
+    Bob by computing: s1 ≡ y1_a^x1_b = 2097992111
+
+- Second signature: Alice want to communicate with Carol -
+Alice generates her keys using g = 7 and p = 2932727519 as parameters
+    x2_a = 679829788 (THIS IS WHAT WE WANT)
+    y2_a ≡ g^x2_a = 7^679829788 ≡ 2341042137 (mod 2932727519)
+
+Alice sends her public key to Carol
+Carol generates her keys using g = 7 and p = 2932727519 as parameters
+    x1_c = 2162907609
+    y1_c ≡ g^x1_c = 7^2162907609 ≡ 2359756352 (mod 2932727519)
+
+Carol sends her public key to Alice
+Alice and Carol can now both compute the shared secret
+    Alice by computing: s2 ≡ y1_c^x2_a = 1348808703
+    Carol by computing: s2 ≡ y2_a^x1_c = 1348808703
+######## SETUP ATTACK ########
+    r ≡ y1_a^a ·g^b = 2282663174 (mod 2932727519)
+    z ≡ y1_a^a ·g^b = 2282663174 (mod 2932727519)
+    Eve has obtained Alice's private key: True
+    She can now use Carole's public key to compute the shared secret: s2 ≡ y1_c^x2_a = 1348808703
+```
+
+
+
+
+
+## Conclusion
+
+In this final chapter, some details of the different presented attacks are repeated here to give a brief summary of it. In addition of it, for every attack proposed, it is mentioned how realistic it is to use it to deploy a kleptographic attack. Followed by this, a few suggestions on how to counter such attacks are given and finally some recommendations on possible research areas that this work could not address.
+
+
+
+### Kleptographic attacks
+
+In this thesis, several attacks have been mentioned and explained in detail. In each attack, the user thinks that the device he's using is secure but as we have seen, an attacker could have contaminated the system and, as a result, exfiltrate private key's from the output of the system. 
+
+
+
+- SETUP in RSA I: 
+- SETUP in El Gamal signatures: 
+- SETUP in Diffie-Hellman: 
+- ASA in ECIES: 
+
+
+
+Of all the attacks presented, the SETUP attack in Diffie-Hellman seems to be the most secure. This is because it is the only one that meets the strong-setup criteria and it uses an operating scheme very close to the original protocol. It is difficult to compare SETUP and ASA because they do not use the same definitions. We can nevertheless note that the attack on ECIES proposed by Bellare seems robust enough to worry about a possible use in cryptosystems, thus implying its possible second place in the usability ranking. We can then quote the attack on the signatures of El Gamal which, despite being a weak-setup, is rather realistic in the sense that the parameters p and g are fixed as is usually the case. Finally comes the attack on RSA but which is based on unrealistic elements such as the fact that e takes too large values, or even that it is normally fixed at 65537.    
+
+
 
 
 
