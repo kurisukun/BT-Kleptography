@@ -521,17 +521,55 @@ which is equal to equation (2) with t = 1 and implies that z2 = z and therefore 
 
  y2 ≡ g^x2 ≡ g^H(z) ≡ g^H(z2) (mod p)
 
+This shows us that this attack on the discrete log against the Diffie-Hellman key exchange protocol has a (1, 2)-leakage scheme. It requires to Eve to obtain two public keys from Alice to give her the possibility of getting her private key.
+
 
 
 ##### Use of a, b and W
 
-An interesting point that remains to be raised before discussing the security of the attack is the reason for the existence of the integers a, b and W.
+An interesting point that remains to be raised before discussing the security of the attack is the reason for the existence of the integers a, b and W: to prevent the user who assumes that the system is contaminated from distinguishing its outputs from those of a normal system. Yung and Young showed that if Alice knows the internal structure of the contaminated device and knows how to inverse H by any manner, she can determine with a certain probability that a SETUP has been used:
+
+Let's suppose Alice can choose the value of the exponents and assume that a, b and W are not used (i.e. a = 1, b = 0 and t = 0 so W is useless), we have:
+
+z ≡ g^x1 · Y^{-x1} 														(10)
+
+If Alice generate two pairs of private and public keys, since she knows that H is an invertible function:
+
+z ≡ H^{-1}(x2)
+
+Alice does not know the value of Y and X since the device acts like a black-box but she still can emit some hypothesis. Yung and Young introduce the result g^x1 / z which we may rewrite as: 
+
+g^{x1} / z ≡ g^{x1} / (g^x1 · Y^{-x1}) ≡ Y^{x1} (mod p) 									(11) 
+
+If the attacker's private key X is odd, it means we have two possibilities:
+
+- If x1 is even, then (11) can be written as:
+
+  Y^{x1} ≡ Y^{2·x1'} ≡ (Y^{x1'} )^2 (mod p) 
+
+  which is by definition a quadratic residue modulo p.
+
+- But if x1 is odd, then (11) can be rewritten as:
+
+  Y^{x1} ≡ Y^{2·x1' + 1} (mod p)
+
+  which is a quadratic non-residue
+
+But if X is even, it follows that:
+
+- Y^{x1} ≡ (g^X )^{x1} ≡ (g^{2X'} )^{x1} ≡ (g^{X·x1} )^2 (mod p)
+
+  which implies that it's a quadratic residue regardless of the value of x1.
 
 
 
+To resume, we now know that in a contaminated system Y^{x1} has a probability of 0.75 to be a quadratic residue and 0.25 for a non-residue. Compared to an uncontaminated system where the distribution of quadratic residuals is balanced[^fn7], the device modified by Eve is unbalanced. This means Alice has the possibility to determine if the device she's using is a contaminated one or not. She computes several private key pairs and calculate the result (11). If she finds out that there are significantly more quadratic residues than non-residues, she will have the certainty that her device is contaminated. 
+
+To summarize, the use of these fixed integers effectively prevents Alice from checking the quadratic residue property and thus prevents her from determining the true nature of the cryptosystem she uses.
 
 
-##### Securiy of the attack
+
+In **example 3**, we have a step-by-step example of the attack. First we have the generation of the parameters for Alice, Bob and Eve with their respective pair of keys. Then in a second step Alice and Bob compute the shared secret so they can begin to communicate confidentially. Then Alice needs to generate an other pair of key, same for Carol, since they want to create a shared secret. We see how Alice's new private key is not drawn randomly but calculated.  Eve can now use her attack to compute for herself the shared secret Alice and Carol have in common. 
 
 
 
@@ -565,7 +603,7 @@ Alice and Bob can now both compute the shared secret
 
 - Second signature: Alice want to communicate with Carol -
 Alice generates her keys using g = 7 and p = 2932727519 as parameters
-    x2_a = 679829788 (THIS IS WHAT WE WANT)
+    x2_a = 679829788 (This is what we are looking for)
     y2_a ≡ g^x2_a = 7^679829788 ≡ 2341042137 (mod 2932727519)
 
 Alice sends her public key to Carol
@@ -577,12 +615,17 @@ Carol sends her public key to Alice
 Alice and Carol can now both compute the shared secret
     Alice by computing: s2 ≡ y1_c^x2_a = 1348808703
     Carol by computing: s2 ≡ y2_a^x1_c = 1348808703
+    
 ######## SETUP ATTACK ########
     r ≡ y1_a^a ·g^b = 2282663174 (mod 2932727519)
     z ≡ y1_a^a ·g^b = 2282663174 (mod 2932727519)
     Eve has obtained Alice's private key: True
     She can now use Carole's public key to compute the shared secret: s2 ≡ y1_c^x2_a = 1348808703
 ```
+
+
+
+##### Security of the attack
 
 
 
@@ -726,6 +769,8 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 [^fn4]:  Kleptography: Using Cryptography Against Cryptography
 [^fn5]:The Dark Side of “Black-Box’’ Cryptography or: Should We Trust Capstone?
 [^fn6]: Problems from the Discrete to the Continuous. Probability, Number Theory, Graph Theory, and Combinatorics
+
+[^fn7]: https://en.wikipedia.org/wiki/Quadratic_residuosity_problem
 
 []: https://en.wikipedia.org/wiki/Coprime_integers#Probabilities
 
