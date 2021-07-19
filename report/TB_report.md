@@ -433,7 +433,7 @@ The attack goes as follow:
 
    and represents the output of the device. As Yung and Young say in their article, the value the private key x1 is stored for the next time the device will be used, and only this one time.
 
-   Now that Alice's device has output the public key y1, she can send it to Bob who in turn has also generated its respective keys. After this, Alice and Bo can compute their shared secret which will permit them to communicate with confidentiality. But if we assume that Alice and Bob want to chance their respective keys, or that Alice wants to send messages securely with a completely different user Carol. 
+   Now that Alice's device has output the public key y1, she can send it to Bob who in turn has also generated its respective keys. After this, Alice and Bob can compute their shared secret which will permit them to communicate with confidentiality. But if we assume that Alice and Bob want to chance their respective keys, or that Alice wants to send messages securely with a completely different user Carol. 
 
 2. For the second usage, the private key x2 is not randomly chosen, it is constructed with the use of multiple integers:
 
@@ -586,7 +586,7 @@ Eve generates her keys using g = 7 and p = 2932727519 as parameters
     Y ≡ g^X = 7^2593769209 ≡ 1915266573 (mod 2932727519)
 
 ######## VICTIM  ########
-- First signature: Alice want to communicate with Bob -
+- First signature: Alice wants to communicate with Bob -
 Alice generates her keys using g = 7 and p = 2932727519 as parameters
     x1_a = 650788030 (What we are looking for)
     y1_a ≡ g^x1_a = 7^650788030 ≡ 974455017 (mod 2932727519)
@@ -626,6 +626,115 @@ Alice and Carol can now both compute the shared secret
 
 
 ##### Security of the attack
+
+According to Yung and Young, this attack relies on two main issues. The first one is that for any other user than the attacker, no one should be able to detect if the SETUP mechanism is in use or not. The second one is that only the attacker has the ability to recover the private key x2, not even the user of the device. To prove that this attack solves these two problems, the authors have stated the respective claims:
+
+
+
+> z is uniformly distributed in Zp.
+
+To prove this, Yung and Young introduce three generators of Z*p:
+
+g1 ≡ g^{-Xb -W} (mod p),   g2 ≡ g^{-Xb},    g3 ≡ g^{1- aX}
+
+Then by taking the result (2) previously seen we can rewrite it as:
+
+z  ≡ g^{x1 -Wt} · Y^{-ax1 - b}
+
+​	≡ g^{x1 -Wt} · (g^X )^{-ax1 - b}
+
+​	≡ g^{x1} · g^{-Wt} · g^{-aXx1} · g^{-Xb}
+
+​	≡ g^{-Xb - Wt} · g^{x1 - aXx1}
+
+​	≡ g^{-Xb - Wt} · g^{(1 - aX) x1}
+
+​	≡ gi · g3^{x1} (mod p) 										(12)
+
+where i can be equal to 1 or 2. More specifically, if t = 0:
+
+ gi = g^{-Xb} = g2 
+
+and if t = 1
+
+gi = g^{-Xb -W} = g1
+
+Then as we know, since g1, g2 and g3 are all generators by hypothesis, we know we can write:
+
+gi ≡ g3^{u} (mod p)
+
+for some integer u.     
+
+Then if we substitute it into equation (12), it gives:
+
+z ≡ g3^{u} g3^{x1} (mod p)
+
+≡ g3^{u + x1} (mod p).
+
+and since x1 is chosen at random in {1, 2, ..., p-1}, then z must be uniformly distributed in Zp.
+
+> The Discrete Log SETUP is secure iff the DH problem is secure. 
+
+For explanations about what the Diffie-Hellman problem represents, have a look at section **METTRE SECTION ICI**. What they explain here is if an user have a way to solve the Diffie-Hellman problem, the SETUP wouldn't stay secure and vice-versa. The proof goes as follows:
+
+Suppose the existence of an oracle A that is able to solve the Diffie-Hellman problem. This is denoted by Yung and Young as:
+
+A(g^u, g^v) = g^{uv}						(12)
+
+This means that the oracle, given the output of g^u and g^v, can compute g^{uv}. Now if the input we give to the oracle is y1^a · g^b and Y. Then:
+
+A(y1^a · g^b, Y) = A((g^x1 )^a · g^b, g^X)
+
+= A(g^{a · x1 + b}, g^X)
+
+= g^{X(a · x1 + b)}
+
+= (g^X) ^{a · x1 + b}
+
+= Y^{a · x1 + b}
+
+Then Yung and Young define f = g^x1 / A(y1^a · g^b, Y) = g^x1 / Y^{a · x1 + b} = g^{x1} · Y^{-a·x1 - b} which is equal to z as we have seen in (2) for t = 0. If t = 1, the result is a little bit different since g^{x1} · Y^{-a·x1 - b} = z / g^W = f. But as the attacker knows the value of g and W, this does not represent a problem and the private key x2 can then be recovered as desired. On the other hand, this means that an user who got access to every parameter in the device would still not be able to recompute the private key x2.
+
+
+
+Then assume we have an oracle B that can break the discret log SETUP which is denoted as:
+
+B(Y, y1) = (z1, z2).
+
+This means that the oracle outputs z1 ≡ g^x1 · Y^{-a·x1  - b} (mod p) and z2 ≡ (g^{x1-W} · Y^{-a·x1  - b}) (mod p).
+
+The objective is to find g^{uv} knowing g^u and g^v. By inserting g^x and g^y in the oracle this way:
+
+B(g^v, g^u) = (g^u · (g^v ) ^{-a·u-b}, g^{u-W} · (g^v )^{-a·u-b} )
+
+we can take the z1 part of the output and calculate:
+
+f = g^{u} · (g^{v} )^{-b} / z1 = g^{u · (g^{v} )^{-b} / g^{u} · (g^{v} )^{-a · u - b} = 1 / (g^{v} )^{-a · u}}
+
+
+
+and then:
+
+(g^{u · v})^{-a} = 1/f 
+ g^{u · v} = f^{1/a} (mod p).
+
+Since the user has access to all of this parameters, he has a way to compute g^{u · v}, i.e. he has solved the Diffie-Hellman problem.
+
+
+
+
+
+> Assuming H is a pseudorandom function, and that the device design is publicly scrutinizable, the outputs of C and C' are polynomially-indistinguishable.
+
+As previously showed, z is uniformly distributed in Zp from their first claim. H is a pseudorandom function by hypothesis so x2 is uniformly distributed. Therefore the outputs C and C' can't be polynomially distinguished because they are the result of a exponentiation. 
+
+
+
+With definitions previously seen we showed that this SETUP on Diffie-Hellman is a strong SETUP as defined in **METTRE SECTION ICI**.
+
+
+
+Finally, Yung ang Young showed that the attack could be improved. Indeed, the attack may seem for the moment still a bit weak because of the fact that it takes two exchanges to Eve in order to be able to recover the key of a user. But the bandwidth can be drastically increased. The proposed idea is the following: when two key exchanges have already been performed, instead of removing x3 randomly, we compute it as x3 = H(z) where z = g^{x2 - Wt}Y^{-ax2 -b}. Then the new public key y3 is calculated following the same principle as before, i.e. y3 = g^{x3} (mod p). Subsequently, the operation can be repeated l times so that the attack now has a (l, l+1)-bandwidth where after a chain of l private keys generated based on the previous one, the new private key is once again drawn randomly.  
 
 
 
