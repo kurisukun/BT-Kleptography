@@ -28,15 +28,19 @@ In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Tra
 
 As we will see further, what Yung and Young have showed is that kleptographic attacks can be considered as asymmetric backdoors. An attacker who implements the backdoor into a cryptosystem or cryptographic protocol is the only one who actually can have use of it. Furthermore, they showed that the output of that subverted cryptosystem is *computationally indistinguishable* compared to a faithful output. The asymmetric aspect also implies that even if anyone succeeds into reverse-engineering the subverted system, he can find that it's compromised but will not be able to use it, where a classic symmetric backdoor can be in turn used after its discovery.
 
-//TODO Une autre date importante: 2012 et les scandales NSA (avant Dual-EC)
-
 The implications of their results were great but at the time only academics believed in them. it was considered more of a theoretical issue than a real threat. This was until 2013 with the Dual_EC_DRBG controversy. 
 
-//TODO dire que Dual-EC a été supprimé du draft du NIST depuis 2013
+The pseudorandom number generator was initially published in 2006 by the NIST and was intended to have a security proof. Since then a lot of researchers highlighted the multiple flaws present in the algorithm architecture and two cryptologists of Microsoft, Dan Shumow and Niels Ferguson, warned of the possible existence of a backdoor [^fn1]. In spite of this Dual_EC_DRBG has been standardized and implemented in multiple libraries like RSA BSAFE or OpenSSL. Of course, no one to date has been able to prove that the backdoor was intentionally placed by the NSA. However, studies have shown that an exploitation of the standard is quite possible in the TLS standard [^fn8], especially the fact that the Extended Random TLS extension[^fn10] is supported would make it even easier to exploit the vulnerability, which still raises suspicions about the malicious and intrusive nature of the information agency. The doubt is reinforced when we know that the agency has made secret contracts[^fn9] with companies to ensure the use of Dual_EC_DRBG in their software, allowing them to ensure the use of this standard and thus increase their possible fields of attack. Finally, the draft has been withdrawn by the NIST from its draft guidance and a recommendation of switching from Dual_EC_DRBG to one of the three remaining algorithms that the organism has already approved has been made. 
 
-The pseudorandom number generator was initially published in 2006 by the NIST and was intended to have a security proof. Since then a lot of researchers highlighted the multiple flaws present in the algorithm architecture and two cryptologists of Microsoft, Dan Shumow and Niels Ferguson, warned of the possible existence of a backdoor [^fn1]. In spite of this Dual_EC_DRBG has been standardized and implemented in multiple libraries like RSA BSAFE or OpenSSL. All suspicions will be proven true when finally several internal NSA documents will be leaked following the Snowden affair and will indicate the existence of the SIGINT project, thus proving the existence of the famous backdoor in the Dual_EC_DRBG algorithm and the very important role that the intelligence agency played in the standardization process. 
+From 2014 onwards, the game has changed and many cryptologists are now looking into kleptography and various attacks and concepts are emerging. Moreover, there is finally a real interest in how to protect against kleptographic attacks.
 
-From 2014 onwards, the game has changed and many cryptologists are now looking into kleptography and various attacks and concepts are emerging. Moreover, there is finally a real interest in how to protect against kleptographic attacks[^fn2] and this even for cryptographic systems based on post-quantum and quantum algorithms[^fn3].
+The renewed interest was mainly due to an article by Bellare, Paterson and Rogaway who later developed the possibility of mass surveillance through the concept of algorithm substitution attacks (ASAs)[^fn2]. Unlike SETUPs, which apply to asymmetric cryptographic standards and how to recover private information using public information (such as public keys), ASAs were originally aimed at symmetric encryption schemes and at recovering information through the ciphertext output. The aim is again to substitute the encryption algorithm with a subverted version created by an adversary. 
+
+Subsequently, in 2015, Dagabriele, Farshim and Poettering redefined the security notion of the ASA model by simplifying the assumption that not all ciphertexts that are output by the subverted algorithm need to be decryptable[^fn11]. In the same year, Bellare, Jaeger and Kane [^fn11] again improved the model by strengthening the notion of undetectability by considering detectors with more capabilities in manipulating the internal states of subverted algorithms. A study of the relationship between ASA and steganography was made and allowed to extract the existence of universal ASAs which work without knowledge of the internal implementation of the underlying cryptographic primitive as long as this one integrates enough entropy, i.e. adds enough randomness in the internal state and is de facto not deterministic.
+
+Latest results[^fn3] try to integrate ASAs in the public key encryption systems. This implies taking up the work of Yung and Young on the SETUP mechanism but attacking instead the encryption operation itself rather than the key generation.
+
+Throughout these years of research, work on how to counter kleptographic attacks has also been carried out and many concepts have emerged, some of which will be presented in this thesis although they remain very theoretical for the moment.  
 
 
 
@@ -145,8 +149,6 @@ Let (D, N) and (E, N) be Eve's keys, respectively private and public keys. Eve's
 
 
 ##### Algorithm of the attack
-
-
 
 Normally in RSA, we choose $e$ to be equal to 65'537​ in practice, but sometimes it happens we randomly generate the exponent e such that 1 < e < phi(n) and gcd{(e, phi(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from \{ 0, 1\}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus phi(n). Here is a comparison between the normal RSA and the contaminated one:
 
@@ -872,6 +874,10 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 
 ```
 
+
+
+
+
 [^fn1]: http://rump2007.cr.yp.to/15-shumow.pdf
 [^fn2]: Security of Symmetric Encryption
 [^fn3]: Subvert KEM to Break DEM:Practical Algorithm-Substitution Attacks on Public-Key Encryption
@@ -880,6 +886,13 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 [^fn6]: Problems from the Discrete to the Continuous. Probability, Number Theory, Graph Theory, and Combinatorics
 
 [^fn7]: https://en.wikipedia.org/wiki/Quadratic_residuosity_problem
+[^ fn8]: https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-checkoway.pdf
+[^fn9]: https://www.reuters.com/article/us-usa-security-rsa-idUSBRE9BJ1C220131220
+[^fn10]: https://datatracker.ietf.org/doc/html/draft-rescorla-tls-extended-random-02
+[^fn11]: A More Cautious Approach to Security Against Mass Surveillance
+[^fn12]:Mass-surveillance without the State: Strongly Undetectable Algorithm-Substitution Attacks
+
+
 
 []: https://en.wikipedia.org/wiki/Coprime_integers#Probabilities
 
@@ -889,3 +902,8 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 
 
 
+**POSSIBLY GOOD FOR DEFENSES**
+
+A More Cautious Approach to Security Against Mass Surveillance
+
+Mass-surveillance without the State: Strongly Undetectable Algorithm-Substitution Attacks
