@@ -1,16 +1,16 @@
 ## Introduction
 
-In our modern, ultra-connected world, we readily imagine that the world's great powers have eyes and ears everywhere, that 1984 is no longer as fictional as it was less than half a century ago, and that the shadow of Big Brother is becoming ever more prominent. A world where our communications, even though encrypted, could be thwarted and read by malicious people without us even realizing it. Techniques for doing this exist and a new field of study that looks into the subject was born in 1996: kleptography. This will be the subject of this thesis.
+In our modern, ultra-connected world, we readily imagine that the world's great powers have eyes and ears everywhere, that 1984 is no longer as fictional as it was less than half a century ago, and that the shadow of Big Brother is becoming ever more prominent. A world where our communications, even though encrypted, could be thwarted and read by malicious people without us even realizing it. Such techniques exist and a new field of study that looks into the subject was born in 1997: kleptography. This will be the subject of this thesis.
 
 
 
 ## Specifications
 
-
-
 ### Problematic
 
- **//TODO**
+Black-box devices are very common: smartcards, telephones, proprietary software, the list is long. The average person imagines that an attack on such devices is possible: indeed, a clumsy design of the device with weak cryptographic parameters, a poorly done programming can represent a considerable danger for these devices. An erroneous use of the device by the user can represent a threat and allow an attacker to seize possible private information. But what if the device itself is malicious? What if the malicious manufacturer had implemented a method for the device to do what it was created to do, but behind the scenes, the manufacturer can, at any time, retrieve the cryptographic keys, decrypt the user's communications and spy on him as he pleases? 
+
+By asking all these questions, we will dive into a field of cryptography little known to the general public. Since the Snowden affair, people are a little more aware of the involvement of government agencies and the stakes of data encryption, but they are not fully aware of what all this field really implies and the consequences on our use of computer technology in general. The purpose of this thesis is therefore to recall the important definitions of kleptography, illustrate some of the attacks and list some of the possible defenses.
 
 
 
@@ -24,7 +24,9 @@ In our modern, ultra-connected world, we readily imagine that the world's great 
 
 ## State of the art
 
-In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP. They wanted to show the threats one can encounter when using a black-box device such as smartcards and more recently mobile phones. Their article has refined the existing concepts of SETUP and provided new definitions of them. In addition, they proved that there are attacks that can leak the secret key of a black-box system without the use of subliminal channels. With this paper and the proofs they made, Yung and Young introduced the concept of kleptography. 
+In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP [^fn5]. They wanted to show the threats one can encounter when using a black-box device such as smartcards and more recently mobile phones. At that time, the article was an attempt to warn about the risks of the black-box cryptography. It must be said that in the 90's, the Capstone project met a lot of resistance from its potential users who saw it as an attempt by the American government to spy on its citizens[^fn13].  As can be seen in the title of their article: "Should we trust Capstone?", Yung and Young were determined to demonstrate this. In addition, they proved that there are attacks that can leak the secret key of the black-box system and the user would not be able to notice it. Then in 1997[^fn4] with the proofs they made, Yung and Young introduced the concept of kleptography by creating types of SETUP attacks and defining the concept of bandwidth leakage which permits to measure the capacity of a SETUP attack to leak private information. 
+
+
 
 As we will see further, what Yung and Young have showed is that kleptographic attacks can be considered as asymmetric backdoors. An attacker who implements the backdoor into a cryptosystem or cryptographic protocol is the only one who actually can have use of it. Furthermore, they showed that the output of that subverted cryptosystem is *computationally indistinguishable* compared to a faithful output. The asymmetric aspect also implies that even if anyone succeeds into reverse-engineering the subverted system, he can find that it's compromised but will not be able to use it, where a classic symmetric backdoor can be in turn used after its discovery.
 
@@ -891,6 +893,9 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 [^fn10]: https://datatracker.ietf.org/doc/html/draft-rescorla-tls-extended-random-02
 [^fn11]: A More Cautious Approach to Security Against Mass Surveillance
 [^fn12]:Mass-surveillance without the State: Strongly Undetectable Algorithm-Substitution Attacks
+[^fn13]: https://groups.csail.mit.edu/mac/classes/6.805/articles/clipper/short-pieces/wsj-clipper-friend.txt
+
+
 
 
 
