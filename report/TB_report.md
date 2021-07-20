@@ -46,6 +46,29 @@ Throughout these years of research, work on how to counter kleptographic attacks
 
 
 
+
+
+## Theoretical introduction
+
+In order to enable the reader to understand the main part of this thesis, a theoretical introduction to some of the concepts discussed is given.
+//TODO Add which principles are reviewed here
+
+
+
+### Terminology 
+
+A first thing that must be discussed here is the name given to the classical figures of cryptology. Each figure starting with a different letter of the alphabet allows to represent an exchange between one or more actors more easily than if it was designated by a simple letter. Each character has a specific role in a scenario. Here is a list of the actors that will be used in this thesis:
+
+
+
+- Alice and Bob: They represent the legitimate users. Usually Alice wants to send a message to Bob and she can receive his response.
+- Carol: She represents usually the third participant in an exchange. 
+- Eve: She represents an eavesdropper (passive listener) which can listen to Alice and Bob exchanges but can not modify them.
+
+
+
+
+
 ## Kleptography
 
 
@@ -219,13 +242,7 @@ Eve has decrypted Bobs message: 7210533
 
 ##### Security of the attack
 
-One criticism that can be made of this attack is that it is not very realistic given the values that the exponent e can take, indeed, e is too large compared to the values of the modulus n. This implies in our scenario that if Alice expects rather small values of e, she will easily realize the deception. We can notice it in the previous example, we see that the exponent is 2410382527 while n is 1928624021. In their article [^fn5], Yung and Young point out that this is what happens in the case of PGP, the exponent being of the order of 5 bits.
-
-//TODO mieux expliquer pour PGP
-
-#### SETUP RSA II
-
-**//TODO**
+One criticism that can be made of this attack is that it is not very realistic given the values that the exponent e can take, indeed, e is too large compared to the values of the modulus n. This implies in our scenario that if Alice expects rather small values of e, she will easily realize the deception. We can notice it in the previous example, we see that the exponent is 2410382527 while n is 1928624021. In their article [^fn5], Yung and Young point out that this is what happens in the case of PGP, the exponent being of the order of 5 bits. Nowadays it is unimaginable to have such a small amount of bits for the exponent, most of the time the exponent is equal to 65537 but the values we get here in the attack are still too big not to be noticed.
 
 
 
