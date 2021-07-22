@@ -24,9 +24,7 @@ By asking all these questions, we will dive into a field of cryptography little 
 
 ## State of the art
 
-In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP [^fn5]. They wanted to show the threats one can encounter when using a black-box device such as smartcards and more recently mobile phones. At that time, the article was an attempt to warn about the risks of the black-box cryptography. It must be said that in the 90's, the Capstone project met a lot of resistance from its potential users who saw it as an attempt by the American government to spy on its citizens[^fn13].  As can be seen in the title of their article: "Should we trust Capstone?", Yung and Young were determined to demonstrate this. In addition, they proved that there are attacks that can leak the secret key of the black-box system and the user would not be able to notice it. Then in 1997[^fn4] with the proofs they made, Yung and Young introduced the concept of kleptography by creating types of SETUP attacks and defining the concept of bandwidth leakage which permits to measure the capacity of a SETUP attack to leak private information. 
-
-
+In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP [^fn5]. They wanted to show the threats one can encounter when using a black-box device such as smartcards and more recently mobile phones. At that time, the article was an attempt to warn about the risks of the black-box cryptography. Indeed, in the 90's, an American governmental project called Capstone was strongly talked about. This project aimed at developing a cryptographic standard for the general public as well as the government but met a lot of resistance from its potential users who saw it as an attempt by the American government to spy on its citizens[^fn13] due to the fact that the design of the proposed algorithm was classified so no one could review it. For many people, this was seen as a threat since the black-box aspect can not be trusted. As can be seen in the title of their article: "Should we trust Capstone?", Yung and Young were determined to demonstrate this. In addition, they proved that there are attacks that can leak the secret key of the black-box system and the user would not be able to notice it. Then in 1997[^fn4] with the proofs they made, Yung and Young introduced the concept of kleptography by creating types of SETUP attacks and defining the concept of bandwidth leakage which permits to measure the capacity of a SETUP attack to leak private information. 
 
 As we will see further, what Yung and Young have showed is that kleptographic attacks can be considered as asymmetric backdoors. An attacker who implements the backdoor into a cryptosystem or cryptographic protocol is the only one who actually can have use of it. Furthermore, they showed that the output of that subverted cryptosystem is *computationally indistinguishable* compared to a faithful output. The asymmetric aspect also implies that even if anyone succeeds into reverse-engineering the subverted system, he can find that it's compromised but will not be able to use it, where a classic symmetric backdoor can be in turn used after its discovery.
 
@@ -66,6 +64,140 @@ A first thing that must be discussed here is the name given to the classical fig
 - Eve: She represents an eavesdropper (passive listener) which can listen to Alice and Bob exchanges but can not modify them.
 
 
+
+
+
+### Number theory
+
+Asymmetric cryptography is based on operations that use number theory and all the attacks presented in this thesis use these notions. Some very basic topics such as what a prime number is, coprimes, the notion of group or the Euclidean algorithm are omitted here. Of course, we will always work here with the sets N or Z unless specified since they are the predominant in cryptography.
+
+
+
+#### Congruence
+
+> Let n be a fixed positive integer. Two integers a and b are said to be congruent modulo n, symbolized by 
+>
+> a ≡ b (mod n). 
+>
+> 
+>
+> if n divides the difference a - b; that is, provided that a - b = kn for some integer k. 
+
+For example, let a = 46 and n = 6. This gives a ≡ 4 (mod 6). Note that this is very similar to the division with reminder since a = 46 = 7 · 6 + 4. We conclude that finding the congruence of a and n is equivalent to finding the reminder of the division a/n.  
+
+
+
+#### Quadratic residues
+
+> Let p be an odd prime and gcd(a, p) = 1. If the quadratic congruence x^2 ≡ a (mod p) has a solution, then a is said to be a quadratic residue of p. Otherwise, a is called a quadratic nonresidue of p. 
+
+The important point to remember is that if a ≡ b (mod p), then a is a quadratic residue of p if and only if b is a quadratic residue of p. This means that we only need to observe the quadratic property of the numbers that are smaller than p to determine that of any other integer. 
+
+Let's consider here the prime number p = 13. To find the list of the quadratic residues of 13, we need to find which integer in {1, 2, ..., 12} satisfy the congruence:
+
+ x^2 ≡ a (mod 13).
+
+The squares are:
+
+1^≡ 12^2 ≡ 1 
+
+2^2 ≡ 11^2 ≡ 4 
+
+3^2 ≡ 10^2 ≡ 9
+
+4^2 ≡ 9^2 ≡ 3 
+
+5^2 ≡ 8^2 ≡ 12
+
+6^2 ≡ 7^2 ≡ 10.
+
+What this means is that the set of the quadratic residues is {1, 3, 4, 9, 10, 12} and the set of the non-residues is {2, 5, 6, 7, 8, 11}.  
+
+
+
+#### Generators of a group
+
+>  Let g ∈ Z^{∗}n .If Z^{∗}{n} = {g^1 , g^2 , . . . , g^{n−1}}, then Z^{∗}n is a cyclic group and g is a generator of this group.
+
+In more concrete terms what this definition tells us is that if one can find an integer g such that taking the n powers of g gives us all the possible elements in the group, we say that g is a generator since it can generate all the possible values and the group has the property of being cyclic.
+
+For example, let n = 5 then  Z^{∗}{5} = {1, 2, 3, 4}. Since:
+
+2^1 ≡ 2 (mod 5)
+
+2^2 ≡ 4 (mod 5)
+
+2^3 = 8 ≡ 3 (mod 5)
+
+2^4 = 16 ≡ 1 (mod 5)
+
+it comes that 2 is a generator of the group. With the same reasoning it comes that 4 is not a generator:
+
+4^1 ≡ 4 (mod 5)
+
+4^2 = 16 ≡ 1 (mod 5)
+
+4^3 = 64 ≡ 4 (mod 5)
+
+4^4 = 256 ≡ 1 (mod 5)
+
+because it only generates the elements 1 and 4.
+
+
+
+### Hard problems
+
+The most common and modern cryptographic schemes rely on the fact that some problems are difficult to solve in a relatively small amount of time. So the cryptosystem is secure in the way that there is no algorithm which solves the mathematical hard problem within a reasonable length of time but the complexity still depends on which mathematical structure is used for the problem or the size of the chosen parameters. For example, the prime factorization is a difficult problem if the size of the integer to be decomposed decomposed is big enough and depends on the accessible calculation power. 
+
+
+
+#### Discrete log problem
+
+> Let G be a group and g be the generator of a cyclic subgroup of G. The discrete log problem is defined as finding the smallest value of x which satisfies the congruence g^{x} ≡ y (mod n) for given g, y and n. 
+
+The discret log problem is the base of several public key cryptosystems as Diffie-Hellman key exchange and El Gamal encryption. In general, there is no efficient known algorithm for computing the discrete logarithm. There is some algorithms like the Baby-Step Giant-Step or Pohlig-Hellman that can solve it but not in a polynomial time which can be sumed up by *not fast enough*. In certain cases, the discret log problem can be solved easily but it's not the case for the cryptosystems covered in this thesis.  
+
+For example, for the group Z^{∗}{5}, if g = 2, finding the discrete logarithm is finding the smallest exponent x such that 2^x  ≡ 3 (mod 5), which in this case is x = 3 since:
+
+2^3 = 8 ≡ 3 (mod 5).
+
+But for large modulus and values, finding this exponent is difficult.
+
+
+
+#### Computational Diffie-Hellman assumption
+
+> Let g be a group of order q. The computational Diffie-Hellman assumption (CDH assumption) is defined as given (g, g^a, g^b), for a randomly chosen generator g and a, b in {1, 2, ..., q-1}, it is computationally intractable to compute the value g^{ab}.
+
+What the problem says is that there is no known algorithm which takes in input g, g^a and g^b and outputs g^{ab} efficiently. It does not mean the problem is impossible, it means that in practical (understand it by with limited computation power) it is not feasible.
+
+In the case of a Diffie-Hellman key exchange, it means that Eve the eavesdropper can observe the values g^x and g^y but is not capable to compute g^{ab} otherwise she would be able to compute the shared secret thus violating the confidentiality of the protocol. 
+
+This resolution of this problem is very related to the one of the discrete log problem.  
+
+
+
+### RSA
+
+//TODO
+
+
+
+### El Gamal
+
+//TODO
+
+
+
+### Diffie-Hellman
+
+//TODO
+
+
+
+### ECIES
+
+//TODO
 
 
 
@@ -297,10 +429,6 @@ Given the scenario where Alice wants to authenticate a message she sends, she wi
     s{i+1} ≡ k{i+1}^{−1} (m{i+1} − x · r{i+1}) (mod p - 1)
 
    and the program outputs the triplet (m{i+1}, r{i+1}, s{i+1}).
-
-
-
-
 
 
 
@@ -755,7 +883,7 @@ With definitions previously seen we showed that this SETUP on Diffie-Hellman is 
 
 
 
-Finally, Yung ang Young showed that the attack could be improved. Indeed, the attack may seem for the moment still a bit weak because of the fact that it takes two exchanges to Eve in order to be able to recover the key of a user. But the bandwidth can be drastically increased. The proposed idea is the following: when two key exchanges have already been performed, instead of removing x3 randomly, we compute it as x3 = H(z) where z = g^{x2 - Wt}Y^{-ax2 -b}. Then the new public key y3 is calculated following the same principle as before, i.e. y3 = g^{x3} (mod p). Subsequently, the operation can be repeated l times so that the attack now has a (l, l+1)-bandwidth where after a chain of l private keys generated based on the previous one, the new private key is once again drawn randomly.  
+Finally, Yung and Young showed that the attack could be improved. Indeed, the attack may seem for the moment still a bit weak because of the fact that it takes two exchanges to Eve in order to be able to recover the key of a user. But the bandwidth can be drastically increased. The proposed idea is the following: when two key exchanges have already been performed, instead of removing x3 randomly, we compute it as x3 = H(z) where z = g^{x2 - Wt}Y^{-ax2 -b}. Then the new public key y3 is calculated following the same principle as before, i.e. y3 = g^{x3} (mod p). Subsequently, the operation can be repeated l times so that the attack now has a (l, l+1)-bandwidth where after a chain of l private keys generated based on the previous one, the new private key is once again drawn randomly.  
 
 
 
