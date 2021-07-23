@@ -903,6 +903,10 @@ Nevertheless, what they say is that they have deliberately chosen to restrict th
 
 
 
+
+
+
+
 #### Stateless and statefull ASA
 
 
@@ -910,6 +914,26 @@ Nevertheless, what they say is that they have deliberately chosen to restrict th
 
 
 #### Undetectability
+
+
+
+#### Decryptability
+
+
+
+> Let ASA = (ASA.Gen, ASA.Enc, ASA.Rec) be an ASA on KEM = (KEM.Setup, KEM.Gen, KEM.Enc, KEM.Dec). We say ASA preserves decryptability for KEM if for any n ∈ N, any pp ←\$  KEM.Setup(1^{n}), and any (pk, sk) ←\$ KEM.Gen(pp), for any (psk, ssk) ←\$ ASA.Gen(pp), and all state τ ∈ {0, 1}∗ ,
+>
+> 
+>
+> Pr[Dec(sk, ψ) ≠  K : (K, ψ) ←\$ ASA.Enc(pk, psk, τ )] ≤ negl(n) ,
+>
+> where the probability is taken over the randomness of algorithm ASA.Enc.
+
+
+
+#### Universal decryptability
+
+> Let KEM = (KEM.Setup, KEM.Gen, KEM.Enc, KEM.Dec) be a KEM defined in Fig. 2. We say KEM is universally decryptable if for any n ∈ N, pp ←\$ KEM.Setup(1n), for any r ← ​\$ KEM.Rg(pp) and C := KEM.Cg(r), we have KEM.Kd(dk, C) = KEM.Kg(ek, r) holds for any (ek, dk) ← ​\$ KEM.Ek(pp).
 
 
 
@@ -927,13 +951,109 @@ Nevertheless, what they say is that they have deliberately chosen to restrict th
 
 #### ASA in ECIES encryption scheme
 
-As we already saw in their article of 2020, Chen Huang and Yung [^fn3] showed there are possible ASAs on PKE (more precisely on KEMs) and they gave a very high level analysis of it. in this section we are going to take all the previously enumerated functions they defined and showing how it is possible to transpose to mount an ASA in the ECIES.
+As we already saw in their article of 2020, Chen, Huang and Yung [^fn3] showed there are possible ASAs on PKE (more precisely on KEMs) and they gave a very high level analysis of it. They noticed that a lot of PKE schemes actually use hybrid encryption: they use a public key cryptosystem to encapsulate the *session key* (KEM) which is then used for encrypting a message with the use of a symmetric encryption cryptosystem (DEM). So the main objective is to show how an attacker can subvert the KEM part in a way he can recover the session key so the DEM part shatters.  
+
+In this section we are going to take all the previously enumerated functions they defined and showing how it is possible to transpose to mount an ASA in the ECIES. 
+
+
+
+
+
+
+
+##### KEM/ASA model comparison
+
+Chen et al. explained the different modules composing a KEM by extracting three main algorithms: KEM.Gen, KEM.Enc and KEM.Dec. 
+
+Here is what these algorithms look like:
+
+```pseudocode
+KEM.Gen(pp):
+	(ek, dk) ←$ KEM.Ek(pp)
+	(tk, vk) ←$ KEM.Tk(pp)
+	pk := (ek, tk)
+	sk := (dk, vk)
+	Return (pk, sk)
+
+KEM.Enc(pk):
+ 	r ←$ KEM.Rg(pp)
+ 	K := KEM.Kg(ek, r)
+ 	C := KEM.Cg(r)
+ 	π := KEM.Tg(tk, r)
+	Return (K, ψ = (C, π))
+
+KEM.Dec(sk, ψ = (C, π)):
+	K_prim := KEM.Kd(dk, C)
+	(π_prim := KEM.Vf(vk, C))
+	(If π_prim = π then K := K_prim)
+	(Else K := ⊥)
+	Return K
+```
+
+
+
+- KEM.Gen takes as input the public parameter i.e. elliptic curve domain parameters in the case of ECIES and that are used by both users to compute correctly every step of the encryption algorithm. This algorithm uses two subalgorithms:
+
+  - KEM.Ek which generates the pair of encapsulation and decapsulation process keys (ek, dk)
+  - KEM.Tk which generated the pair of tag generation and verification process keys (tk, vk).
+
+  Then it outputs the public key pk = (ek, tk) which permits the action of encapsulating and generating the tag and the private key sk = (dk, vk) which permits to verify the tag of the message and then if the tag is correct to decrypt.
+
+  In ECIES, this is done exactly the same way as sk is drawn randomly and then pk is computed as pk = sk*G.
+
+- KEM.Enc which takes as input the public key of the other user and outputs K and ψ = (C, π)
+
+  - KEM.Rg which generates the next random value r.
+
+    This is exactly the action of taking a value r at random for the upcoming computation of C = rG in ECIES.
+
+  - KEM.Kg which generates the key K needed for upcoming generation of the encapsulation and encryption keys.
+
+    Derivation of the symmetric encryption key and MAC key with a KDF. The KDF takes the shared secret S = Px where P = (Px, Py) computed as the multiplication of r and the public key.
+
+  - KEM.Cg(r) which computes C = rG which will permit to the other user to perform the decryption of the message as in normal ECIES.
+
+  - KEM.Tg(tk, r) which computes the ciphertext tag 
+
+    As in ECIES, we use authentication encryption which implies the calculation of a tag in order to verify that the message received comes from the person we think.
+
+- KEM.Dec
+
+
+
+```pseudocode
+ASA.Gen(pp):
+	(psk, ssk) ← $ KEM.Ek(pp)
+	Return (psk, ssk)
+ 
+ 
+ASA.Rec(pk, ssk, Ci , Ci-1 ): /*i > 1*/
+	t := KEM.Kd(ssk, Ci-1)
+	ri := H (t)
+	Ki := KEM.Kg(ek, ri)
+	Return Ki
+ 
+ASA.Enc(pk, psk, τ): /*i-th execution*/
+	If τ = ε then
+ 		ri ← $ KEM.Rg(pp)
+	Else
+		(t := KEM.Kg(psk, τ))
+		(ri := Hk̂ (t))
+		
+	Ki := KEM.Kg(ek, ri )
+	Ci := KEM.Cg(ri)
+ 	πi := KEM.Tg(tk, ri )
+	(τ := ri)
+	Return (Ki , ψi = (Ci , πi ))
+```
+
+
+
+
 
 
 
 ##### Transpose the generic ASA to ECIES
-
-
 
 Recall the given algorithms of the article:
 
@@ -948,7 +1068,7 @@ For ECIES, this algorithm corresponds to generating the random value ssk which w
 
 psk = G * ssk
 
-and return both keys.
+and return both keys. 
 
 
 
@@ -968,7 +1088,31 @@ and return both keys.
 
 ##### Security of the attack
 
+Because of the somewhat peculiar form of the security proofs provided by Chen et al in the form of a game, a reminder of each property obtained as well as an explanation of the proof will be given rather than the more formal proof itself.
 
+
+
+As before let KEM = (KEM.Setup, KEM.Gen, KEM.Enc, KEM.Dec) be a KEM and ASA = (ASA.Gen, ASA.Enc, ASA.Rec) be an ASA on KEM, so the results given by the authors are:
+
+
+
+>  The ASA preserves the decryptability of KEM.
+
+This property is easily demonstrated. It can be seen that the ASA.Enc function is the same as KEM.Enc except for some details related to the internal generation of the randomness but how the key and the ciphertext are produced remains unchanged.
+
+Cette propriété permet de s'assurer que lorsqu'on utilise cette ASA, 
+
+
+
+> The ASA is session-key-recoverable if KEM is universally decryptable.
+
+ 
+
+
+
+> Assume KEM is ϵ_{prk} (n)-key-pseudo-random and H is ϵ{es} (n)-entropy smoothing, then our ASA satisfies (u, q, ϵ)-undetectability where q is the query number by the adversary in the detection game and 
+>
+> ϵ ≤ (q - 1)(ϵ_{prk}(n) + ϵ{es}(n)).
 
 
 
