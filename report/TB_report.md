@@ -957,11 +957,11 @@ As we already saw in their article of 2020, Chen, Huang and Yung [^fn3] showed t
 
 
 
-In this section we are going to take all the previously enumerated functions they defined and showing how it is possible to transpose to mount an ASA in the ECIES. 
+In this section we are going to take all the previously enumerated functions they defined and showing how it is possible to transpose to mount an ASA in the ECIES scheme. 
 
 
 
-##### KEM/ASA model comparison
+##### KEM and ASA models comparison 
 
 Chen et al. explained the different modules composing a KEM by extracting three main algorithms: KEM.Gen, KEM.Enc and KEM.Dec. 
 
@@ -970,7 +970,7 @@ Here is what these algorithms look like:
 ```pseudocode
 KEM.Gen(pp):
 	(ek, dk) ←$ KEM.Ek(pp)
-	(tk, vk) ←$ KEM.Tk(pp)
+	((tk, vk) ←$ KEM.Tk(pp))
 	pk := (ek, tk)
 	sk := (dk, vk)
 	Return (pk, sk)
@@ -979,7 +979,7 @@ KEM.Enc(pk):
  	r ←$ KEM.Rg(pp)
  	K := KEM.Kg(ek, r)
  	C := KEM.Cg(r)
- 	π := KEM.Tg(tk, r)
+ 	(π := KEM.Tg(tk, r))
 	Return (K, ψ = (C, π))
 
 KEM.Dec(sk, ψ = (C, π)):
@@ -995,7 +995,7 @@ KEM.Dec(sk, ψ = (C, π)):
 - KEM.Gen takes as input the public parameter i.e. elliptic curve domain parameters in the case of ECIES and that are used by both users to compute correctly every step of the encryption algorithm. This algorithm uses two subalgorithms:
 
   - KEM.Ek which generates the pair of encapsulation and decapsulation process keys (ek, dk)
-  - KEM.Tk which generated the pair of tag generation and verification process keys (tk, vk).
+  - KEM.Tk which generated the pair of tag generation and verification process keys (tk, vk). This operation is seen as optional if there is no authenticated encryption asked. 
 
   Then it outputs the public key pk = (ek, tk) which permits the action of encapsulating and generating the tag and the private key sk = (dk, vk) which permits to verify the tag of the message and then if the tag is correct to decrypt.
 
@@ -1013,27 +1013,28 @@ KEM.Dec(sk, ψ = (C, π)):
 
   - KEM.Cg which computes C = rG which will permit to the other user to perform the decryption of the message as in normal ECIES.
 
-  - KEM.Tg which computes the ciphertext tag 
+  - KEM.Tg which computes the ciphertext tag. This computation is done only if the authenticated encryption is required. 
 
     As in ECIES, we use authentication encryption which implies the calculation of a tag in order to verify that the message received comes from the person we think.
 
-- KEM.Dec uses the private key sk and verifies the tag π. If the tag is correct then decrypts C to find K
+- KEM.Dec uses the private key sk and verifies the tag π. If the tag is correct then decrypts C to find K. 
 
   - KEM.Kd takes dk and C so it can generate session key K 
 
     In ECIES this is when the shared secret is derived from C and the receiver's private key. //The computation goes as dk\*C = dk\*rG = r*Kb
 
-  -  KEM.Vf  uses vk and C to compute the tag π'
+  -  KEM.Vf  uses vk and C to compute the tag π'. Just like some of the previous steps, this step may be optional.
 
-    This computation is done before the decryption strictly speaking in ECIES. However, this operation is often done at the same time as the tag π'=π verification.
+    Note that like in ECIES, if the tags don't correspond, the encryption is not processed. For this particular algorithm, K is not output.
 
 
+
+Now if we compare it to the subverted version:
 
 ```pseudocode
 ASA.Gen(pp):
-	(psk, ssk) ← $ KEM.Ek(pp)
+	(psk, ssk) ←$ KEM.Ek(pp)
 	Return (psk, ssk)
- 
  
 ASA.Rec(pk, ssk, Ci , Ci-1 ): /*i > 1*/
 	t := KEM.Kd(ssk, Ci-1)
@@ -1055,11 +1056,32 @@ ASA.Enc(pk, psk, τ): /*i-th execution*/
 	Return (Ki , ψi = (Ci , πi ))
 ```
 
+we can see some changes have been made. Let's take each algorithm one after the other:
 
+
+
+- ASA.Gen does not change significantly. We see the use of KEM.Ek which is enough to perform the encapsulation mechanism. If the authentication of the message is needed, then ASA.Gen is a clone of KEM.Gen. Note that after their generation, psk and ssk are respectively connected to ASA.Enc and guarded by the attacker.
+- ASA.Enc, unlike previously, has two more parameters as input: psk the hard-wired public key of the subverter and τ which represents the internal state and its initial value is set to ε. τ allows to recognize if it is the first use of ASA.Enc or not in which case the value of ri is not calculated the same way. How the ciphertext is generate still follows the same legitimate process by running KEM.Cg and KEM.Kg.  
+- ASA.Rec is newly introduced and is used to retrieve the session key. To do so, there must be at least more than one ciphertext. 
 
 
 
 ##### Algorithm of the attack
+
+
+
+**Example 4**
+
+```
+```
+
+
+
+
+
+##### Recovering the private key
+
+
 
 
 
@@ -1076,8 +1098,6 @@ As before let KEM = (KEM.Setup, KEM.Gen, KEM.Enc, KEM.Dec) be a KEM and ASA = (A
 >  The ASA preserves the decryptability of KEM.
 
 This property is easily demonstrated. It can be seen that the ASA.Enc function is the same as KEM.Enc except for some details related to the internal generation of the randomness but how the key and the ciphertext are produced remains unchanged.
-
-Cette propriété permet de s'assurer que lorsqu'on utilise cette ASA, 
 
 
 
