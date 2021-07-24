@@ -963,7 +963,7 @@ In this section we are going to take all the previously enumerated functions the
 
 ##### KEM and ASA models comparison 
 
-Chen et al. explained the different modules composing a KEM by extracting three main algorithms: KEM.Gen, KEM.Enc and KEM.Dec. 
+Chen *et al.* explained the different modules composing a KEM by extracting three main algorithms: KEM.Gen, KEM.Enc and KEM.Dec. 
 
 Here is what these algorithms look like:
 
@@ -1001,7 +1001,7 @@ KEM.Dec(sk, ψ = (C, π)):
 
   In ECIES, this is done exactly the same way as sk is drawn randomly and then pk is computed as pk = sk*G.
 
-- KEM.Enc which takes as input the public key of the other user and outputs the session key K and ψ = (C, π) where C is the key ciphertext and π is the key tag 
+- KEM.Enc which takes as input the public key of the other user and outputs the session key K and ψ = (C, π) where C is the key ciphertext and π is the key tag. As in ECIES, we use authentication encryption which implies the calculation of a tag in order to verify that the message received comes from the person we think.
 
   - KEM.Rg which generates the next random value r.
 
@@ -1014,8 +1014,6 @@ KEM.Dec(sk, ψ = (C, π)):
   - KEM.Cg which computes C = rG which will permit to the other user to perform the decryption of the message as in normal ECIES.
 
   - KEM.Tg which computes the ciphertext tag. This computation is done only if the authenticated encryption is required. 
-
-    As in ECIES, we use authentication encryption which implies the calculation of a tag in order to verify that the message received comes from the person we think.
 
 - KEM.Dec uses the private key sk and verifies the tag π. If the tag is correct then decrypts C to find K. 
 
@@ -1154,7 +1152,7 @@ In this thesis, several attacks have been mentioned and explained in detail. In 
 
 
 
-- SETUP in RSA I: 
+- SETUP in RSA: 
 - SETUP in El Gamal signatures: 
 - SETUP in Diffie-Hellman: 
 - ASA in ECIES: 
