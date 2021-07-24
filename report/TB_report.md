@@ -201,6 +201,16 @@ This resolution of this problem is very related to the one of the discrete log p
 
 
 
+### Stateful encryption
+
+Encryption may be sometimes a quiet heavy operation in term of computational burden or volume of transmitted data in recurrent communications between two entities. This is why stateful encryption may represent a judicious choice: since some data is shared (a packet, a session key, a block of information), there's no need to recompute everything from the beginning for every communication chunk. Bellare, Kohno and Shoup [^fn15] showed this mechanism can be used to reduce the overhead of encrypting data directly with asymmetric schemes, El Gamal being an example. 
+
+So a encryption scheme E is said stateful if its output does not consist of a ciphertext and a state σ but only a ciphertext. If σ is assumed to always have the same value (let's say 0), then the scheme is said stateless. 
+
+
+
+
+
 ## Kleptography
 
 
@@ -899,35 +909,35 @@ In their article, Bellare Paterson and Rogawa didn't give a formal definition of
 
 > The goal of an algorithm substitution attack (ASA), also called a subversion attack (SA), is to replace an honest implementation of a cryptographic tool by a subverted one which allows to leak private information while generating output indistinguishable from the honest output
 
-Nevertheless, what they say is that they have deliberately chosen to restrict themselves to attacks on symmetric encryption schemes. They explain this with several reasons: the first is that analyzing the risks of subverting a symmetric cipher is paramount because of its wide use in secure communications. The second is that even if they limit themselves to this case, their scenario corresponds to what would happen if an agency like the NSA  would do against a cryptographic library rather than subverting a whole protocol built on the top of the library.
+Nevertheless, what they say is that they have deliberately chosen to restrict themselves to attacks on symmetric encryption schemes. They explain this with several reasons: the first is that analyzing the risks of subverting a symmetric cipher is paramount because of its wide use in secure communications. The second is that even if they limit themselves to this case, their scenario corresponds to what would happen if an agency like the NSA  would do against a cryptographic library rather than subverting a whole protocol built on the top of the library. In particular if we come back to Bellare *et al.*, they define the notion of symmetric encryption scheme as:
 
 
 
+> A scheme for symmetric encryption is a triple Π = (K, E, D). The key space K is a finite nonempty set. The encryption algorithm E is a possibly randomized algorithm that maps a four-tuple of strings K, M, A, σ to a pair of strings (C, σ' ) <- E(K, M, A, σ). The arguments to E represent the key, message (plaintext), associated data and current state. The output consists of the ciphertext C and revised state σ'. 
 
+This definition does not bring any new notion to the definition of symmetric encryption scheme but shows adequately the notations used by the authors. Still, we can remark the argument σ which brings the notion of stateless and stateful encryption and represents a very important notion as we are going to see later. 
 
 
 
 #### Stateless and statefull ASA
 
+To move forward, let's define the notion of stateless and stateful ASA and look at the importance of it for Bellare *et al.*  As defined in **METTRE LIEN**, we can define E and D to be stateless of stateful encryption/decryption algorithms. Then the whole symmetric encryption scheme:
 
+> Π is stateless if both E and D are stateless. In this case, we drop the second component of the output of both algorithms, so that E now returns just a ciphertext and D just a message. 
 
+as expected. 
 
-
-#### Undetectability
+In their work, one of the objectives was to show that the decryption process must be stateful to avoid the possibility of mounting an ASA. As we will see later, this necessity has been disapproved since under the condition of reducing the strong undetectability property of the ASA, it is possible to obtain a plausible ASA.
 
 
 
 #### Decryptability
 
+> We say that Π~ = (K~, E,\~, D\~)  satisfies the decryptability condition relative to Π = (K, E, D) if (K\~ × K, E\~, D' ) is a correct encryption scheme where D' is defined by D' ((K~, K), C, A, σ) = D(K, C, A, σ). Thus, although algorithm E~ operates on a key (K~, K) different from the key K of the base scheme Π, a party possessing only K can decrypt E~-encrypted plaintexts using the legitimate decryption algorithm D.
 
 
-> Let ASA = (ASA.Gen, ASA.Enc, ASA.Rec) be an ASA on KEM = (KEM.Setup, KEM.Gen, KEM.Enc, KEM.Dec). We say ASA preserves decryptability for KEM if for any n ∈ N, any pp ←\$  KEM.Setup(1^{n}), and any (pk, sk) ←\$ KEM.Gen(pp), for any (psk, ssk) ←\$ ASA.Gen(pp), and all state τ ∈ {0, 1}∗ ,
->
-> 
->
-> Pr[Dec(sk, ψ) ≠  K : (K, ψ) ←\$ ASA.Enc(pk, psk, τ )] ≤ negl(n) ,
->
-> where the probability is taken over the randomness of algorithm ASA.Enc.
+
+#### Undetectability
 
 
 
@@ -1196,7 +1206,7 @@ As before let KEM = (KEM.Setup, KEM.Gen, KEM.Enc, KEM.Dec) be a KEM and ASA = (A
 
 >  The ASA preserves the decryptability of KEM.
 
-This property is easily demonstrated. It can be seen that the ASA.Enc function is the same as KEM.Enc except for some details related to the internal generation of the randomness but how the key and the ciphertext are produced remains unchanged.
+This property is easily demonstrated. It can be seen that the ASA.Enc function is the same as KEM.Enc except for some details related to the internal generation of the randomness but how the key and the ciphertext are produced remains unchanged. This implies that the property of decryptability still remains. 
 
 
 
@@ -1363,6 +1373,10 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 [^fn12]:Mass-surveillance without the State: Strongly Undetectable Algorithm-Substitution Attacks
 [^fn13]: https://groups.csail.mit.edu/mac/classes/6.805/articles/clipper/short-pieces/wsj-clipper-friend.txt
 [^fn14]: Algorithm Substitution Attacks from a Steganographic Perspective
+
+[^fn15]: Stateful Public-Key Cryptosystems: How to Encrypt with One 160-bit Exponentiation
+
+
 
 
 
