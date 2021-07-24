@@ -307,7 +307,7 @@ Let (D, N) and (E, N) be Eve's keys, respectively private and public keys. Eve's
 
 ##### Algorithm of the attack
 
-Normally in RSA, we choose $e$ to be equal to 65'537​ in practice, but sometimes it happens we randomly generate the exponent e such that 1 < e < phi(n) and gcd{(e, phi(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from \{ 0, 1\}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus phi(n). Here is a comparison between the normal RSA and the contaminated one:
+Normally in RSA, we choose $e$ to be equal to 65'537 in practice, but sometimes it happens we randomly generate the exponent e such that 1 < e < ϕ(n) and gcd{(e, ϕ(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from {0, 1}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus ϕ(n). Here is a comparison between the normal RSA and the contaminated one:
 
 | RSA key generation algorithm      | SETUP RSA key generation algorithm for victim | SETUP RSA key generation algorithm for attacker |
 | --------------------------------- | --------------------------------------------- | ----------------------------------------------- |
@@ -320,7 +320,7 @@ Normally in RSA, we choose $e$ to be equal to 65'537​ in practice, but sometim
 
 
 
-Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing $p \equiv e^D \mod(N) = (p^E)^D \mod(N) = p \mod(N)$  since the parameter n is public. Then she can compute $\phi(n)$ and finally find $d \equiv e^{-1} \mod(\phi(n))$, Alice's private key and decrypt all messages Bob sends to her. 
+Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing p ≡ e^D (mod N) = (p^E )^D (mod N) = p (mod N)  since the parameter n is public. Then she can compute ϕ(n) and finally find d ≡ e^{-1} (mod ϕ(n)), Alice's private key and decrypt all messages Bob sends to her. 
 
 It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption of Bob to obtain the prime p. 
 
@@ -392,7 +392,7 @@ The attacker's keys are generated as for a classical El Gamal signature and the 
 
 ##### Algorithm of the attack
 
-As for a classical El Gamal, we define a prime number p and a generator g of $\Z^*_p$ for the user and for the attacker. Then let X ∈ {1, 2, ..., p-1} be the attacker's private key and Y ≡ g^X (mod p) his public key. Let then x be the user's private key and y the corresponding public key generated as the attacker's one.   
+As for a classical El Gamal, we define a prime number p and a generator g of Z^*_p​ for the user and for the attacker. Then let X ∈ {1, 2, ..., p-1} be the attacker's private key and Y ≡ g^X (mod p) his public key. Let then x be the user's private key and y the corresponding public key generated as the attacker's one.   
 
 Given the scenario where Alice wants to authenticate a message she sends, she will send the triplet (m, r, s) to Bob where m is actually the hash of the message and r and s form the signature. To perform this attack, Eve needs to get two consecutive signatures, two triplets (m1, r1, s1) and (m2, r2, s2), from Alice. These signatures are computed as follows:
 
@@ -1046,13 +1046,13 @@ ASA.Enc(pk, psk, τ): /*i-th execution*/
 	If τ = ε then
  		ri ← $ KEM.Rg(pp)
 	Else
-		(t := KEM.Kg(psk, τ))
-		(ri := Hk̂ (t))
+		/*Diff*/ t := KEM.Kg(psk, τ)
+		/*Diff*/ ri := Hk̂ (t)
 		
 	Ki := KEM.Kg(ek, ri )
 	Ci := KEM.Cg(ri)
  	πi := KEM.Tg(tk, ri )
-	(τ := ri)
+	/*Diff*/ τ := ri
 	Return (Ki , ψi = (Ci , πi ))
 ```
 
@@ -1068,20 +1068,49 @@ we can see some changes have been made. Let's take each algorithm one after the 
 
 ##### Algorithm of the attack
 
+Suppose Alice wants to communicate securely with Bob using the ECIES encryption scheme. To do this, let Alice and Bob generate their respective key pairs (sk_a, pk_a) and (sk_b, pk_b) and let m1 = "Hi Bob!" be the first message she wants to send to him. Finally let Eve's generated keys with the help of function ASA.Gen be (ssk, psk). Her private key remains secret since she does not want to let anyone use the ASA mechanism and psk is directly wired to the functions requiring it.
 
 
-**Example 4**
 
-```
-```
+First the KEM is used to encapsulate the session key using the ASA.Enc function. Being the first encapsulation that Alice performs, the initial value of τ is ε so r1 is drawn randomly with KEM.Rg. So the procedure followed by the algorithm is the following:
+
+K1 = pk_b · r1
+
+C1 = r1 · G
+
+π1 = pk_b · r1
+
+Finally τ takes the value of r1, changing it from initial value ε.
+
+Then comes the DEM part where the data will be effectively encrypted. It does not matter which symmetric encryption algorithm is used since what the attack subverts is the KEM. Let's say it's AES with mode CTR for the encryption and a HMAC like SHA256 for the authentication. Alice uses K1 to encrypt the message m1 so she gets c1 and calculates the corresponding tag t1.
 
 
+
+Let's imagine now that Alice wants to send an other message to Bob. For her, nothing has changed and the KEM once again produces a new session key and a tag generation key, but behind the scenes it is quite different. As we have seen, tau has changed its value so that we will not generate r2 as before. Instead:
+
+t = psk · τ
+
+r2 = H(t)
+
+and then goes as before:
+
+K2 = pk_b · r2
+
+C2 = r2 · G
+
+π2 = pk_b · r2
+
+And now again Alice can encrypt and generate the corresponding tag to send it to Bob. 
 
 
 
 ##### Recovering the private key
 
 
+
+
+
+**Example 4**
 
 
 
