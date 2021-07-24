@@ -1234,14 +1234,35 @@ In this thesis, several attacks have been mentioned and explained in detail. In 
 
 
 
-- SETUP in RSA: 
-- SETUP in El Gamal signatures: 
-- SETUP in Diffie-Hellman: 
-- ASA in ECIES: 
+- SETUP in RSA: The exponent e of the user contains his parameter p. With the use of her private key D, Eve can recover p and then compute q since the parameter n = p · q is public. Then Eve can compute ϕ(n) and then recover Alice's private key d.
+
+  This is a strong SETUP and has a (1,1)-bandwidth leakage.
+
+- SETUP in El Gamal signatures: The random integer k_{i+1} incorporates k\_{i} respectively coming from the second and the first signature. and 
+
+  This is a weak SETUP and has a (1,2)-bandwidth leakage.
+
+- SETUP in Diffie-Hellman: This SETUP mechanism integrates the very first user's private key x1 in his second one x2. To perform the recovery, the attacker needs the user to have performed two key exchanges, and thus generated two public keys y1 and y2. For both connections, it is necessary that they involve Alice in the process.
+
+  This is a strong SETUP and has a (1,2)-bandwidth leakage.
+
+- ASA in ECIES: The KEM part of the ECIES hybrid encryption is subverted. The algorithm is modified to hide the session key K in the ciphertext. The random value ri is defined differently depending on whether it is the first iteration of the algorithm or not. Therefore, from the second iteration, the subverter can recalculate the random value used to encapsulate the key and thus find K. 
 
 
 
 Of all the attacks presented, the SETUP attack in Diffie-Hellman seems to be the most secure. This is because it is the only one that meets the strong-setup criteria and it uses an operating scheme very close to the original protocol. It is difficult to compare SETUP and ASA because they do not use the same definitions. We can nevertheless note that the attack on ECIES proposed by Bellare seems robust enough to worry about a possible use in cryptosystems, thus implying its possible second place in the usability ranking. We can then quote the attack on the signatures of El Gamal which, despite being a weak-setup, is rather realistic in the sense that the parameters p and g are fixed as is usually the case. Finally comes the attack on RSA but which is based on unrealistic elements such as the fact that e takes too large values, or even that it is normally fixed at 65537.    
+
+
+
+### Protections against kleptographic attacks
+
+
+
+#### Protection against SETUP attacks
+
+
+
+#### Protection against ASA
 
 
 
