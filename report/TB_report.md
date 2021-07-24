@@ -1256,13 +1256,33 @@ Of all the attacks presented, the SETUP attack in Diffie-Hellman seems to be the
 
 ### Protections against kleptographic attacks
 
+Throughout this thesis, we have studied how kleptographic attacks were possible on known and widely used cryptosystems through a considerable number of mathematical concepts. However, it is important to note that solutions, although not widely discussed in the literature or by the industry, do exist and are proposed. In this section, we will focus on some of the solutions considered by some researchers to counter such attacks. However, this part does not aim at giving all the details and concepts behind these protections, and even less the audacity to give a perfectly exhaustive list of them.
+
 
 
 #### Protection against SETUP attacks
 
+In the conclusion of their article, Yung and Young [^fn5], 
+
+- Giving the user a way to influence the randomness of the system and making the algorithms used accessible. As we have often seen, an important criterion of kleptographic attacks is not to arouse suspicion about the output of the device. Allowing the user to read the algorithm and make sure it works (i.e. not using black-box devices) and the random values it produces would prevent this. If the user then has access to a device that he knows he can trust, he could compare the outputs and make sure they are the same given his total control. 
+
+- The user has to be certain that the software generating the keys is trustworthy. To do so, the user should be able to run integrity checks which can detect modification that could be done to the software. 
+- Using cryptosystems of different origins in cascade. As the process is now handled by multiple sources, the chances of a SETUP attack since if one cryptosystem outputs something strange, the other systems may detect it and alert the user. 
+- They indicate that in the case of smartcards, an interesting feature would be to allow random number generation using a third-party device. That way, if that other device is trusted, there is no risk that a SETUP attack could be used. 
+- Make the source generating the randomness, the key generation and the user sending messages, separate as three very distinct modules. These three modules must be able to communicate with each other securely, be properly authenticated and not be able to be bypassed in any way. 
+- Industry standards must move in the direction of increasing confidence in hardware devices.
+
 
 
 #### Protection against ASA
+
+
+
+### Uncovered subjects
+
+
+
+### Personal conclusion
 
 
 
