@@ -1074,7 +1074,7 @@ First the KEM is used to encapsulate the session key using the ASA.Enc function.
 
 K1 = pk_b · r1
 
-C1 = r1 · G
+C1 = r1 · G						(1)
 
 π1 = pk_b · r1
 
@@ -1086,7 +1086,7 @@ Then comes the DEM part where the data will be effectively encrypted. It does no
 
 Let's imagine now that Alice wants to send an other message to Bob. For her, nothing has changed and the KEM once again produces a new session key and a tag generation key, but behind the scenes it is quite different. As we have seen, tau has changed its value so that we will not generate r2 as before. Instead:
 
-t = psk · τ
+t = psk · τ							(2)
 
 r2 = H(t)
 
@@ -1103,6 +1103,22 @@ And now again Alice can encrypt and generate the corresponding tag to send it to
 
 
 ##### Recovering the private key
+
+Recall that Eve's pair of key is (ssk, psk). Eve has access only to what Alice sends to Bob, that is to say to the Ci values which allow Bob to carry out the calculation of the shared secret, the public key of Bob pk_b and of course his own generated keys. Elle recovers the session key by doing so:
+
+At the end of the first iteration of ASA.Enc, we saw that tau took the value of the random r1. This means during the second iteration when t has been computed, if we take the relation (2) and change it:
+
+t = psk · r1
+
+and we combine with the result (1), then it follows:
+
+t = psk · r1 = ssk · G · r1 = ssk · C1  
+
+which is actually the computation realized by ASA.Kd and since Eve has access to all of this information. Therefore, it becomes trivial to find the session key like this:
+
+r2 = H(t)
+
+K2 = pk_b · r2
 
 
 
@@ -1162,7 +1178,6 @@ Bob receives the new message and decrypts it:
 Eve attacks the session key K2
 Ki2 subversively obtained: b'+\xcd\\P_G\x8d\\\xc6y\xba\xec\xc2n\x0c\xb9h\xa6\x1c\xc23@\xa7\xc2\xa7\x9d\x80\xbc#\x9a\xb6|V\xf1i\xd7\xc1V9\n\x8d\x17\xb4\xae\x0br*\xb7\x95\xa1\x89\xf9\xaf\x83\xcf\xaa\xd6\xe7\xb3$\x12?\x8c\x1c'
 Eve can obtain all next messages. For example m2: b'How are you? Long time no see!'
-
 ```
 
 
@@ -1171,7 +1186,7 @@ Eve can obtain all next messages. For example m2: b'How are you? Long time no se
 
 ##### Security of the attack
 
-Because of the somewhat peculiar form of the security proofs provided by Chen et al in the form of a game, a reminder of each property obtained as well as an explanation of the proof will be given rather than the more formal proof itself.
+Because of the somewhat peculiar form of the security proofs provided by Chen *et al* in the form of a game, a reminder of each property obtained as well as an explanation of the proof will be given rather than the more formal proof itself.
 
 
 
