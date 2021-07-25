@@ -1260,25 +1260,63 @@ Throughout this thesis, we have studied how kleptographic attacks were possible 
 
 
 
-#### Protection against SETUP attacks
-
-In the conclusion of their article, Yung and Young [^fn5], 
-
-- Giving the user a way to influence the randomness of the system and making the algorithms used accessible. As we have often seen, an important criterion of kleptographic attacks is not to arouse suspicion about the output of the device. Allowing the user to read the algorithm and make sure it works (i.e. not using black-box devices) and the random values it produces would prevent this. If the user then has access to a device that he knows he can trust, he could compare the outputs and make sure they are the same given his total control. 
-
-- The user has to be certain that the software generating the keys is trustworthy. To do so, the user should be able to run integrity checks which can detect modification that could be done to the software. 
-- Using cryptosystems of different origins in cascade. As the process is now handled by multiple sources, the chances of a SETUP attack since if one cryptosystem outputs something strange, the other systems may detect it and alert the user. 
-- They indicate that in the case of smartcards, an interesting feature would be to allow random number generation using a third-party device. That way, if that other device is trusted, there is no risk that a SETUP attack could be used. 
-- Make the source generating the randomness, the key generation and the user sending messages, separate as three very distinct modules. These three modules must be able to communicate with each other securely, be properly authenticated and not be able to be bypassed in any way. 
-- Industry standards must move in the direction of increasing confidence in hardware devices.
+In the conclusion of their respective articles [^fn2] [^fn3] [^fn5], some of the authors gave some countermeasures against the kleptographic attacks:
 
 
 
-#### Protection against ASA
+##### De-randomized algorithms
+
+Giving the user a way to influence the randomness of the system and making the algorithms used accessible. As we have often seen, an important criterion of kleptographic attacks is not to arouse suspicion about the output of the device. Allowing the user to read the algorithm and make sure it works (i.e. not using black-box devices) and the random values it produces would prevent this. If the user then has access to a device that he knows he can trust, he could compare the outputs and make sure they are the same given his total control. 
+
+Like Yung and Young, we can see that in the article by Bellare *et al.* that one of the countermeasures that comes up to prevent ASAs is the abandonment of algorithms using randomness and instead using deterministic and stateful algorithms. Yet, as we have seen with ECIES ASA, this condition seems not sufficient since we were able to mount the attack with the effective loss of a security property for the mechanism. Furthermore, Chen *et al.* pointed out that turning your back on non-deterministic algorithms means turning your back on IND-CPA security as well which would be a consequential loss.
+
+
+
+##### Cascading cryptosystems
+
+Using cryptosystems of different origins in cascade. As the process is now handled by multiple sources, the chances of a SETUP attack since if one cryptosystem outputs something strange, the other systems may detect it and alert the user. 
+
+
+
+##### Integrity checks
+
+The user has to be certain that the software generating the keys is trustworthy. To do so, the user should be able to run integrity checks which can detect modification that could be done to the software. This can be achieved with deterministic compilation[^fn16] (or also known as a reproducible build) and with tools like Gitian[^fn17] or Bazel [^fn18] which ensures that a same source code will product a same binary. if the binary is compiled from trusted source code, then SETUP attacks is countered.  
+
+
+
+##### Random generation with a third-party device 
+
+They indicate that in the case of smartcards, an interesting feature would be to allow random number generation using a third-party device. That way, if that other device is trusted, there is no risk that a SETUP attack could be used. 
+
+
+
+##### Modular sources
+
+Make the source generating the randomness, the key generation and the user sending messages, separate as three very distinct modules. These three modules must be able to communicate with each other securely, be properly authenticated and not be able to be bypassed in any way. 
+
+
+
+##### Industry standards improvement
+
+Industry standards must move in the direction of increasing confidence in hardware devices. This proposed measure by Yung and Young is not very well argued, but it is clear that a somewhat more political dimension is at play here. They do not explain how to increase this confidence, but we can still think   that industry may make some security proofs of their devices, have more open sourced projects and rely more and more on community reviews.
+
+
+
+##### Randomized algorithms more constrained
+
+Randomized algorithms may still stay usable with some additional constraints made in a way that it defeats kleptography. 
+
+
+
+1. Introduced by Russel, Tang, Yung and Zhou [^fn19], the split-program methodology consists of decomposing the randomized algorithm into two algorithms RG and dG. Later as they showed in a following article[^fn21], this method wasn't sufficient to avoid every type of kleptographic attacks. To address some of the shortcomings of their model, the authors [^fn20] [^fn21] subsequently proposed to decompose their function RG into two independent functions RG0 ad RG1. Their respective outputs are combined (amalgamation of the outputs as the authors call it) with the use of a publicly known hashing function to generate the final random number. This way, one can ensure that the randomness mechanism hasn't been subverted.  
+2. Cryptographic reverse firewall introduced by Mironov and Stephens-Davidowitz in [^fn22] has the purpose to protect a protocol between two entities where one of them may use a subverted algorithm. The mechanism is depicted as a third-party whose purpose is to sanitize the user's outgoing transactions so it won't alter her security: it takes the input/output coming from/to the random generation algorithm and re-randomize it. Unfortunately, this implies that the mechanism requires the use of a perfectly reliable source of randomness too.
+3. Self-guarding mechanism [^fn23] by Fischlin and Mazaheri is quiet interesting and is based on the principle that the subversion of the algorithm will happen sooner or later, but that it first goes through a phase where it can be completely trusted. The idea is to collect samples of cipher from this initial state and store them. In the second phase, when the algorithm has been subverted, the challenge phase begins and the strategy is to use the previous samples to check if the generated ciphers are corrupted in any way.
 
 
 
 ### Uncovered subjects
+
+
 
 
 
@@ -1416,6 +1454,17 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 [^fn14]: Algorithm Substitution Attacks from a Steganographic Perspective
 
 [^fn15]: Stateful Public-Key Cryptosystems: How to Encrypt with One 160-bit Exponentiation
+
+[^fn16]: https://reproducible-builds.org/
+[^fn17]:https://gitian.org/
+[^fn18]: https://bazel.build/
+[^fn19]:Cliptography: Clipping the Power of Kleptographic Attacks
+[^fn20]: Generic semantic security against a kleptographic adversary.
+[^fn21]: Destroying steganography via amalgamation: Kleptographically cpa secure public key encryption
+[^fn22]: Cryptographic reverse firewalls
+[^fn23]: Self-guarding cryptographic protocols against algorithm substitution attacks
+
+
 
 
 
