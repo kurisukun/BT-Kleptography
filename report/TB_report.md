@@ -49,7 +49,7 @@ Throughout these years of research, work on how to counter kleptographic attacks
 ## Theoretical introduction
 
 In order to enable the reader to understand the main part of this thesis, a theoretical introduction to some of the concepts discussed is given.
-//TODO Add which principles are reviewed here
+
 
 
 
@@ -177,30 +177,6 @@ This resolution of this problem is very related to the one of the discrete log p
 
 
 
-### RSA
-
-//TODO
-
-
-
-### El Gamal
-
-//TODO
-
-
-
-### Diffie-Hellman
-
-//TODO
-
-
-
-### ECIES
-
-//TODO
-
-
-
 ### Stateful encryption
 
 Encryption may be sometimes a quiet heavy operation in term of computational burden or volume of transmitted data in recurrent communications between two entities. This is why stateful encryption may represent a judicious choice: since some data is shared (a packet, a session key, a block of information), there's no need to recompute everything from the beginning for every communication chunk. Bellare, Kohno and Shoup [^fn15] showed this mechanism can be used to reduce the overhead of encrypting data directly with asymmetric schemes, El Gamal being an example. 
@@ -242,10 +218,6 @@ A more formal definition as been given by Yung and Young in their article [^fn4]
 > 5. Furthermore, the output of C and C’ are polynomially indistinguishable to everyone except the attacker.
 > 6. After the discovery of the specifics of the setup algorithm and after discovering its presence in the implementation (e.g. reverse-engineering of hardware tamper-proof device), users (except the attacker) cannot determine past (or future) keys.
 
-
-
-//TODO etoffer avec même quelques exemples
-
 If we take this definition point by point, we can bring up several things:
 
 1. The first point shows that a user must be able to use C' in the same way as he uses C. This means that the parameters taken as input by C' must not be different from C otherwise it could make the user suspicious.
@@ -263,7 +235,7 @@ It is important to note that for Yung and Young, this last point is really only 
 
 > A weak setup is a regular setup except that the output of C and C‘ are polynomially indistinguishable to everyone except the attacker and the owner of the device who is in control (knowledge) of his or her own private key (i.e, requirement 5 above is changed).
 
-As Yung and Young say in their paper [^fn4], this form of SETUP may seem insecure, and indeed it is in the sense that a user in possession of the blackbox device can distinguish a genuine output from a contaminated one. But in reality, it implies that this same user manages to find out how to detect it by his own means. Moreover, it also implies that the user is aware that this kind of attack exists, otherwise he won't even suspect it. For these reasons, this type of SETUP can be useful as we can see **(EXAMPLE SIGNATURE EL GAMAL?)**
+As Yung and Young say in their paper [^fn4], this form of SETUP may seem insecure, and indeed it is in the sense that a user in possession of the blackbox device can distinguish a genuine output from a contaminated one. But in reality, it implies that this same user manages to find out how to detect it by his own means. Moreover, it also implies that the user is aware that this kind of attack exists, otherwise he won't even suspect it. For these reasons, this type of SETUP can be useful as we can see in the SETUP in El Gamal signature scheme. 
 
 
 
@@ -283,13 +255,16 @@ This form of SETUP is much safer than the weak version since the system doesn't 
 
 Each of these types can be seen as a security level of a SETUP, so it seems important to summarize the main properties distinguishing them in order to allow a finer analysis of existing attacks that we will see later.
 
-//TODO avoir une comparaison plus haut niveau avec des exemples par exemple
-
 | Type    | Important properties                                         |
 | ------- | ------------------------------------------------------------ |
 | Weak    | Only the user of the device can distinguish an output from C and C' in a polynomial time and knowing the private key |
 | Regular | Even with the private key, the user of the device cannot distinguish an output from C and C' in a polynomial time |
 | Strong  | With a complete understanding of how the system works and an access to all existing keys, the user will not be able to recover past and future keys or distinguish an output from C and C' |
+
+To summarize, let's take a small example with three black-box cryptosystems D1, D2 and D3 and let's consider D1 has a weak SETUP, D2 has a regular SETUP and D3 has a strong SETUP.
+
+If the user of D1 realizes the subversion, he can with his private key also use this subversion as the attacker would. He can thus realize when a SETUP attack is taking place with his black-box device and distinguish the output from another legitimate one. For example, a fraudulent cryptographic module that generates RSA keys, the user would immediately see that the generated key is not perfectly random compared to a normal RSA key.  However, this is not the case for D2 and D3.
+For D2, the device is used exactly like a normal device. If we take the example from before, the user can use the module as if it were perfectly legitimate, but would not be able to realize the subversion. However, if the user were to discover the deception and could obtain the internal state of his module, he could easily find all the attacks that have been or will be perpetrated.This is not the case for D3.
 
 
 
@@ -1316,7 +1291,7 @@ Randomized algorithms may still stay usable with some additional constraints mad
 
 ### Uncovered subjects
 
-This thesis introduced the fundamental concepts of kleptography, presented how it developed over time in parallel with the announcement of various NSA scandals, its renewed interest and the new concepts that are still emerging today. Nevertheless, much of the work done by Yung and Young could not be presented here. We can think in particular of the attack on Kerberos (put here), the improvement of the SETUP in RSA using the method of bias removal. Also, it would have been quite possible to implement more ASAs, for example on signature algorithms, or even to implement a kleptographic attack against a cryptocurrency, rather than just an encryption scheme. The field of possibilities is, as you can see, enormous.
+This thesis introduced the fundamental concepts of kleptography, presented how it developed over time in parallel with the announcement of various NSA scandals, its renewed interest and the new concepts that are still emerging today. Nevertheless, much of the work done by Yung and Young could not be presented here. We can think in particular of the attack on Kerberos (put here), the improvement of the SETUP in RSA using the method of bias removal(put here). Also, it would have been quite possible to implement more ASAs, for example on signature algorithms (put here), or even not to limit it to an encryption scheme but to an application like Signal, or a kleptographic attack implementation against a cryptocurrency. The field of possibilities is, as you can see, enormous.
 
 Finally, even if we have discussed existing countermeasures, it would be interesting to consider for a future work to show the effectiveness of these solutions through implementation in Sage and Python as it is the case here. 
 
