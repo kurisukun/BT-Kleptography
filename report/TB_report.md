@@ -1316,7 +1316,9 @@ Randomized algorithms may still stay usable with some additional constraints mad
 
 ### Uncovered subjects
 
+This thesis introduced the fundamental concepts of kleptography, presented how it developed over time in parallel with the announcement of various NSA scandals, its renewed interest and the new concepts that are still emerging today. Nevertheless, much of the work done by Yung and Young could not be presented here. We can think in particular of the attack on Kerberos (put here), the improvement of the SETUP in RSA using the method of bias removal. Also, it would have been quite possible to implement more ASAs, for example on signature algorithms, or even to implement a kleptographic attack against a cryptocurrency, rather than just an encryption scheme. The field of possibilities is, as you can see, enormous.
 
+Finally, even if we have discussed existing countermeasures, it would be interesting to consider for a future work to show the effectiveness of these solutions through implementation in Sage and Python as it is the case here. 
 
 
 
