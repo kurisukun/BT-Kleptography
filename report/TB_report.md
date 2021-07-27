@@ -1,3 +1,16 @@
+## Publishable summary
+
+
+
+Since 2013 with the Snowden affair, we can easily imagine that intelligence agencies such as the NSA have placed us under permanent surveillance: all our secure communications, when they are not being listened to, can be thwarted and read by these agencies and all this without us being aware of it or being able to do anything. These threats are not new and have been studied for almost 25 years through the field of kleptography.
+With the help of this work, we present the fundamental concepts of kleptography, from its creation by Yung and Young in 1997 to today. To do so, in a first step, the mechanisms of Secretly Embedded Trapdoor with Universal Protection (SETUP) and Algorithm Substitution Attack (ASA) are formally defined with their own underlying characteristics and consequences.
+In a second step, several kleptographic attacks against known and commonly used encryption schemes and cryptographic protocols such as RSA, Diffie-Hellman are studied. Each attack is then implemented in Sage to show how easy it is to deploy these attacks.
+Finally we will have a presentation of the main countermeasures listed in the literature.
+
+
+
+
+
 ## Introduction
 
 In our modern, ultra-connected world, we readily imagine that the world's great powers have eyes and ears everywhere, that 1984 is no longer as fictional as it was less than half a century ago, and that the shadow of Big Brother is becoming ever more prominent. A world where our communications, even though encrypted, could be thwarted and read by malicious people without us even realizing it. Such techniques exist and a new field of study that looks into the subject was born in 1997: kleptography. This will be the subject of this thesis.
@@ -882,7 +895,7 @@ In 2014, Bellare, Paterson, and Rogawa brought the formal study of Algorithm Sub
 
 #### ASA definition
 
-In their article, Bellare Paterson and Rogawa didn't give a formal definition of ASA so the following definition is taken from the article  *Algorithm Substitution Attacks from a Steganographic Perspective*[^fn14] of Sebastian Bernd and Maciej Liskiewicz:
+In their article, Bellare Paterson and Rogawa didn't give a formal definition of ASA so the following definition is taken from the article *Algorithm Substitution Attacks from a Steganographic Perspective*[^fn14] of Sebastian Bernd and Maciej Liskiewicz:
 
 > The goal of an algorithm substitution attack (ASA), also called a subversion attack (SA), is to replace an honest implementation of a cryptographic tool by a subverted one which allows to leak private information while generating output indistinguishable from the honest output
 
@@ -928,7 +941,7 @@ In this section we are going to present some new concepts give by the authors an
 
 
 
-#### Universal decryptability
+##### Universal decryptability
 
 > Let KEM = (KEM.Setup, KEM.Gen, KEM.Enc, KEM.Dec) be a KEM. We say KEM is universally decryptable if for any n ∈ N, pp ←\$ KEM.Setup(1n), for any r ← ​\$ KEM.Rg(pp) and C := KEM.Cg(r), we have 
 >
@@ -1051,11 +1064,17 @@ Suppose Alice wants to communicate securely with Bob using the ECIES encryption 
 
 First the KEM is used to encapsulate the session key using the ASA.Enc function. Being the first encapsulation that Alice performs, the initial value of τ is ε so r1 is drawn randomly with KEM.Rg. So the procedure followed by the algorithm is the following:
 
+first we generate the session key $K_{1}$ using the public key and the random value
+
 K1 = pk_b · r1
+
+then we generate C1, the value sent to the other user for the shared secret computation
 
 C1 = r1 · G						(1)
 
-π1 = pk_b · r1
+and then
+
+π1 = pk_b · r1.
 
 Finally τ takes the value of r1, changing it from initial value ε.
 
@@ -1096,6 +1115,8 @@ t = psk · r1 = ssk · G · r1 = ssk · C1  (3)
 which is actually the computation realized by ASA.Kd and since Eve has access to all of this information. Therefore, it becomes trivial to find the session key like this:
 
 r2 = H(t)
+
+and then:
 
 K2 = pk_b · r2
 
