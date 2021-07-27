@@ -1222,7 +1222,7 @@ In this thesis, several attacks have been mentioned and explained in detail. In 
 
   This is a strong SETUP and has a (1,1)-bandwidth leakage.
 
-- SETUP in El Gamal signatures: The random integer k_{i+1} incorporates k\_{i} respectively coming from the second and the first signature. and 
+- SETUP in El Gamal signatures: The random integer k_{i+1} incorporates k\_{i} respectively coming from the second and the first signature.  
 
   This is a weak SETUP and has a (1,2)-bandwidth leakage.
 
@@ -1300,7 +1300,7 @@ Randomized algorithms may still stay usable with some additional constraints mad
 
 ### Uncovered subjects
 
-This thesis introduced the fundamental concepts of kleptography, presented how it developed over time in parallel with the announcement of various NSA scandals, its renewed interest and the new concepts that are still emerging today. Nevertheless, much of the work done by Yung and Young could not be presented here. We can think in particular of the attack on Kerberos (put here), the improvement of the SETUP in RSA using the method of bias removal(put here). Also, it would have been quite possible to implement more ASAs, for example on signature algorithms (put here), or even not to limit it to an encryption scheme but to an application like Signal, or a kleptographic attack implementation against a cryptocurrency. The field of possibilities is, as you can see, enormous.
+This thesis introduced the fundamental concepts of kleptography, presented how it developed over time in parallel with the announcement of various NSA scandals, its renewed interest and the new concepts that are still emerging today. Nevertheless, much of the work done by Yung and Young could not be presented here. We can think in particular of the attack on Kerberos [^fn5], the improvement of the SETUP in RSA using the method of bias removal(put here). Also, it would have been quite possible to implement more ASAs, for example on signature algorithms (put here), or even not to limit it to an encryption scheme but to an application like Signal, or a kleptographic attack implementation against a cryptocurrency. The field of possibilities is, as you can see, enormous.
 
 Finally, even if we have discussed existing countermeasures, it would be interesting to consider for a future work to show the effectiveness of these solutions through implementation in Sage and Python as it is the case here. 
 
@@ -1308,7 +1308,11 @@ Finally, even if we have discussed existing countermeasures, it would be interes
 
 ### Personal conclusion
 
+Kleptography has been a fascinating field to study, both in terms of the new concepts it has introduced me to and the far-reaching consequences it can have on the real world.
+Beyond their work on the subject, and it is perhaps this dimension that resonated with me the most, all these authors were able to highlight a very critical vision of our current society, to push to the reflection on what we use every day and how it is necessary to "consume" the technology that is offered to us. Even if we should not be as alarmist as in Bellare, Rogaway, Paterson's article about mass surveillance, it is certainly good to keep in mind that maliciousness from our governmental institutions is always possible.
+By its nature kleptography is elusive and without extensive research on the cryptosystems we use, we can't have warranties of its usage. Because of that, one can easily explain how some people may find conspiracies about global surveillance very credible.
 
+So I would say without falling into the paranoia, this thesis taught me to stay more and more critical of cryptographical algorithms and the importance of reviewing them as much as possible.     
 
 
 
@@ -1461,11 +1465,3 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 []: https://connect.ed-diamond.com/MISC/MISC-084/Surveillance-generalisee-DualECDRBG-10-ans-apres
 
 []: https://en.wikipedia.org/wiki/Dual_EC_DRBG#cite_note-wired-schneier-4
-
-
-
-**POSSIBLY GOOD FOR DEFENSES**
-
-A More Cautious Approach to Security Against Mass Surveillance
-
-Mass-surveillance without the State: Strongly Undetectable Algorithm-Substitution Attacks
