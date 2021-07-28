@@ -1312,7 +1312,7 @@ Kleptography has been a fascinating field to study, both in terms of the new con
 Beyond their work on the subject, and it is perhaps this dimension that resonated with me the most, all these authors were able to highlight a very critical vision of our current society, to push to the reflection on what we use every day and how it is necessary to "consume" the technology that is offered to us. Even if we should not be as alarmist as in Bellare, Rogaway, Paterson's article about mass surveillance, it is certainly good to keep in mind that maliciousness from our governmental institutions is always possible.
 By its nature kleptography is elusive and without extensive research on the cryptosystems we use, we can't have warranties of its usage. Because of that, one can easily explain how some people may find conspiracies about global surveillance very credible.
 
-So I would say without falling into the paranoia, this thesis taught me to stay more and more critical of cryptographical algorithms and the importance of reviewing them as much as possible.     
+So I would say without falling into the paranoia, this thesis taught me to stay more and more critical of cryptographic algorithms and the importance of reviewing them as much as possible.     
 
 
 
