@@ -198,13 +198,13 @@ def main():
     print(f'Encoded message: {encoded_message} \n')
 
     print("Alice encrypts the message to send it to Bob")
-    c = rsa_encrypt(encoded_message, alice_e, alice_n)
+    c = rsa_encrypt(encoded_message, bob_e, bob_n)
 
     print("Bob receives Alice's message. He decrypts it")
-    plaintext = rsa_decrypt(c, alice_d, alice_n)
+    plaintext = rsa_decrypt(c, bob_d, bob_n)
 
     print("Eve attacks Bob's private key")
-    stolen_message = rsa_setup_attack(c, eve_d, eve_n, alice_e, alice_n)
+    stolen_message = rsa_setup_attack(c, eve_d, eve_n, bob_e, bob_n)
     print(f'Eve has decrypted Alice\'s message: {stolen_message}')
 
 
