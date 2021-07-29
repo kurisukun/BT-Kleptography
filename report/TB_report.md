@@ -542,6 +542,8 @@ Key recovery: 7975  2894982921  3974137686
     Alice private key obtained: 4252958629
 ```
 
+The code generating this sequence can be found here: **METTRE LIEN VERS LE CODE**.
+
 
 
 ##### Security of the attack
@@ -732,7 +734,7 @@ To summarize, the use of these fixed integers effectively prevents Alice from ch
 
 
 
-In **example 3**, we have a step-by-step example of the attack. First we have the generation of the parameters for Alice, Bob and Eve with their respective pair of keys. Then in a second step Alice and Bob compute the shared secret so they can begin to communicate confidentially. Then Alice needs to generate an other pair of key, same for Carol, since they want to create a shared secret. We see how Alice's new private key is not drawn randomly but calculated.  Eve can now use her attack to compute for herself the shared secret Alice and Carol have in common. 
+In **example 3**, we have a step-by-step example of the attack. First we have the generation of the parameters for Alice, Bob and Eve with their respective pair of keys. Then in a second step Alice and Bob compute the shared secret so they can begin to communicate confidentially. Then Alice needs to generate an other pair of key, same for Carol, since they want to create a shared secret. We see how Alice's new private key is not drawn randomly but calculated.  Eve can now use her attack to compute for herself the shared secret Alice and Carol have in common. The code corresponding to this sequence can be found here: **METTRE LIEN VERS LE CODE**.
 
 
 
@@ -1336,21 +1338,81 @@ So I would say without falling into the paranoia, this thesis taught me to stay 
 
 ```python
 def encode_message(m):
+    """Encode the string m into a interger
+
+    Parameters
+    ----------
+    m : str
+        The string to be encoded
+
+    Returns
+    -------
+    int
+        The encoded message represented as an integer. Each character of m is converted into his ASCII value 
+    """
+
     return int("".join(list(map(lambda c: str(ord(c)), list(m)))))
 
 def rsa_encrypt(m, e, n) :
+    """ RSA encryption 
+
+    Parameters
+    ----------
+    m : str
+        The message to be encrypted
+    e:  int
+        The public key of the user to whom we want to send the encrypted message
+    n:  int
+        The modulus shared between the two communicating users
+
+    Returns
+    -------
+    int
+        The encrypted message 
+    """
+
     print(f'Encryption of {m}:')
     c = power_mod (m, e, n)
     print(f'    c = m^e mod(n) = {c}\n')
     return c
 
 def rsa_decrypt(c, d, n) :
+    """ RSA decryption
+    
+    Parameters
+    ----------
+    c : str
+        The ciphertext to be decrypted
+    d:  int
+        The private key of the user who received a encrypted message
+    n:  int
+        The modulus shared between the two communicating users
+
+    Returns
+    -------
+    int
+        The decrypted message 
+    """
+
     print(f'Decryption of {c}:')
     m = power_mod(c, d, n)
     print(f'    m = c^d mod(n) = {m}\n')
     return m
 
 def setup_attacker_key_gen(size):
+    """Computes the RSA keys for the attacker using normal RSA key generation
+
+    Parameters
+    ----------
+    size : int
+        The size of the generated keys which is computed as: 2^(size/2))
+
+    Returns
+    -------
+    tuple
+        A tuple of integers representing public key, private key and modulus 
+    """
+
     P = 0
     Q = random_prime(2^(size / 2), lbound = 2^(size/2-1))
     phi = 0
@@ -1374,6 +1436,23 @@ def setup_attacker_key_gen(size):
     return (E, D, N)
 
 def setup_victim_key_gen(size, E, N):
+    """Computes the RSA keys for the attacker using a subverted version of RSA encryption scheme. 
+
+    Parameters
+    ----------
+    size : int
+        The size of the generated keys which is computed as: 2^(size/2))
+    E : int
+        The public key of the attacker hardwired into this function
+    N : int
+        The modulus of the attacker
+
+    Returns
+    -------
+    tuple
+        A tuple of integers representing subverted public key, private key and modulus 
+    """
+
     p = 0
     q = random_prime ( 2^(size / 2), lbound = 2^(size/2-1))
     phi = 0
@@ -1386,7 +1465,7 @@ def setup_victim_key_gen(size, E, N):
         e = power_mod(p, E, N)
     d = inverse_mod(e, phi)
     print("######## VICTIM ########")
-    print("Alice generates her keys using contaminated system:")
+    print("Bob generates his keys using contaminated system:")
     print(f'    p = {p} and q = {q}')
     print(f'    n = p · q = {n}')
     print(f'    ϕ(n) = (p − 1)·(q − 1) = {phi}')
@@ -1396,6 +1475,28 @@ def setup_victim_key_gen(size, E, N):
 
 
 def rsa_setup_attack(c, D, N, e, n):
+    """Recover a user's private key based on the fact that his public key e has been subverted 
+    using public key E and modulus N and decrypts the given ciphertext c
+
+    Parameters
+    ----------
+    c : int
+        A ciphertext produced with the following parameters
+    D : int
+        Private key of the attacker
+    N : int
+        Modulus of the attacker
+    e : int
+        Subverted public key of the victim
+    n : int
+        Modulus of the victim
+
+    Returns
+    -------
+    int
+        The decrypted ciphertext 
+    """
+
     p = power_mod(e, D, N)
     print("######## SETUP ATTACK ########")
     print(f'    p ≡ e^D mod(N) ≡ {p}')
@@ -1408,33 +1509,919 @@ def rsa_setup_attack(c, D, N, e, n):
     print(f'    d ≡ e^−1 ≡ {d} (mod n) \n')
     return rsa_decrypt(c, d, n)
 
+def main():
+    eve_keys = setup_attacker_key_gen(32)
+    (eve_e, eve_d, eve_n) = eve_keys
 
-eve_keys = setup_attacker_key_gen(32)
-(eve_e, eve_d, eve_n) = eve_keys
+    bob_keys = setup_victim_key_gen(32, eve_e, eve_n)
+    (bob_e, bob_d, bob_n) = bob_keys
 
-alice_keys = setup_victim_key_gen(32, eve_e, eve_n)
-(alice_e, alice_d, alice_n) = alice_keys
+    message = "Hi!"
+    print(f'Alice wants to send the message: {message}')
+    encoded_message = encode_message(message)
+    print(f'Encoded message: {encoded_message} \n')
 
-message = "Hi!"
-print(f'Bob wants to send the message: {message}')
-encoded_message = encode_message(message)
-print(f'Encoded message: {encoded_message} \n')
+    print("Alice encrypts the message to send it to Bob")
+    c = rsa_encrypt(encoded_message, bob_e, bob_n)
 
-print("Bob encrypts the message to send it to Alice")
-c = rsa_encrypt(encoded_message, alice_e, alice_n)
+    print("Bob receives Alice's message. He decrypts it")
+    plaintext = rsa_decrypt(c, bob_d, bob_n)
 
-print("Alice receives Bob's message. She decrypts it")
-plaintext = rsa_decrypt(c, alice_d, alice_n)
+    print("Eve attacks Bob's private key")
+    stolen_message = rsa_setup_attack(c, eve_d, eve_n, bob_e, bob_n)
+    print(f'Eve has decrypted Alice\'s message: {stolen_message}')
 
-print("Eve attacks Alice's private key")
-stolen_message = rsa_setup_attack(c, eve_d, eve_n, alice_e, alice_n)
-print(f'Eve has decrypted Bob\'s message: {stolen_message}')
+
+if __name__ == "__main__":
+    main()
 ```
 
 
 
 ```python
+def encode_message(m):
+    """Encode the string m into a interger
 
+    Parameters
+    ----------
+    m : str
+        The string to be encoded
+
+    Returns
+    -------
+    int
+        The encoded message represented as an integer. Each character of m 
+        is converted into his ASCII value 
+    """
+
+    return int("".join(list(map(lambda c: str(ord(c)), list(m)))))
+
+def elgamal_parameters_gen(size):
+    """ El Gamal parameters generation
+
+    Parameters
+    ----------
+    size :  int
+        The number of bits for the size of the randomly
+        generated prime p
+        
+    Returns
+    -------
+    tuple
+        A tuple containing the prime p and a generator g of group Zp*   
+    """
+
+    p = random_prime(2^(size), lbound = 2^(size-1))
+    Fp = Integers(p)
+    g = Fp.unit_gens()
+    return (p, g[0])
+
+def elgamal_key_gen(g, p):
+    """ El Gamal keys generation
+
+    Parameters
+    ----------
+    g : int
+        A generator of Zp*
+    p : int
+        The prime corresponding to the cardinality of Zp* set 
+        
+    Returns
+    -------
+    tuple
+        A tuple containing the private and public key   
+    """
+
+    x = ZZ.random_element(1, p-2)
+    y = power_mod(g, x, p)
+    return (x, y)
+
+
+def gen_first_signature(g, m, p, x):
+    """ Generation of the first signature
+
+    Parameters
+    ----------
+    g : int
+        A generator of Zp*
+    m : int
+        The message to send is and encoded as an integer
+    p : int
+        The prime corresponding to the cardinality of Zp* set
+    x : int
+        The private key
+        
+    Returns
+    -------
+    tuple
+        A tuple containing:
+            - m the initial message
+            - r the first part of the signature
+            - s the second part of the signature
+            - k the randomly generated integer (returned for 
+            practicality and clarity of the code)
+    """
+
+    p = int(p)
+    g = int(g)
+    x = int(x)
+    k = 0
+    while gcd(k, p-1) != 1: 
+        k = ZZ.random_element(1, p-2)
+    
+    print(f'    Generation of k1 = {k} such that gcd(k1, p-1) = 1')
+
+    r = power_mod(g, k, p)
+    print(f'    r1 ≡ g^k1 = {g}^{k} ≡ {r} (mod {p})')
+    s = (inverse_mod(k, p-1) * (m - x * r)) % (p-1)
+    print(f'    s1 ≡ k1^−1(m1 − x · r1 ) ≡ {inverse_mod(k, p-1)}({m} - {x}·{r}) ≡ {s} (mod {p-1})')
+    return (m, r, s, k)
+
+def gen_second_signature(g, k, m, p, x, Y):
+    """ Generation of the second signature
+
+    Parameters
+    ----------
+    g : int
+        A generator of Zp*
+    k : int
+        Random integer generated in previous signature
+    m : int
+        The message to send is and encoded as an integer
+    p : int
+        The prime corresponding to the cardinality of Zp* set
+    x : int
+        The private key
+    Y : int
+        The attacker's public key
+        
+    Returns
+    -------
+    tuple
+        A tuple containing:
+            - m the initial message
+            - r the first part of the signature
+            - s the second part of the signature
+    """
+
+    g = int(g)
+    k = int(k)
+    m = int(m)
+    p = int(p)
+    Y = int(Y)
+
+    c = power_mod(Y, k, p)
+    print(f'c ≡ Y^k1 ≡ {Y}^{k} ≡ {c} (mod {p})')
+
+    k_next = 0
+    if gcd(c, p-1) == 1 and gcd(power_mod(g, inverse_mod(int(c), p-1), p), p-1) == 1:
+        k_next = inverse_mod(int(c), p-1)
+    else:
+        print("Attack failed")
+        raise ValueError('SETUP attack has not been used here')
+        while True:
+            k_next = ZZ.random_element(1, p-2)
+            if gcd(k_next, p-1) == 1:
+                break
+
+    print(f'    k2 ≡ c^-1 ≡ {k_next} (mod {p-1})')
+
+    r_next = power_mod(g, k_next, p)
+    print(f'    r2 ≡ g^k2 = {g}^{k_next} ≡ {r_next} (mod {p})')
+    s_next = (inverse_mod(int(k_next), p-1) * (m - x * r_next)) % (p-1)
+    print(f'    s2 ≡ k2^−1(m2 − x · r2 ) ≡ {inverse_mod(k_next, p-1)}({m} - {x}·{r_next}) ≡ {s_next} (mod {p-1})\n')
+    return (m, r_next, s_next)
+
+def verify_signature(p, g, y, m, r, s):
+    """ El Gamal signature verification
+
+    Parameters
+    ----------
+    p : int
+        The prime corresponding to the cardinality of Zp* set 
+    g : int
+        A generator of Zp*
+    y : int
+        Public key of the user whose private key was 
+        used to generate r and s
+    m : int
+        Message that has been signed
+    r : int
+        The first part of the signature
+    s : int
+        The second part of the signature
+        
+    Returns
+    -------
+    bool
+        True if the signature (r,s) corresponds to the 
+        message m given in parameter   
+    """
+
+    sig = power_mod(g, m, p)
+    print(f'    g^m ≡ {sig} (mod {p})')
+    sig_prime = (power_mod(y, r, p) * power_mod(r, s, p)) % p
+    print(f'    y^r · r^s ≡ {sig_prime} (mod {p})')
+    
+    return (sig == sig_prime)
+    
+
+
+def key_recovery(r, s, p, X):
+    """ Recover a user's private key based on the fact that the 
+    second signature has been subverted 
+
+    Parameters
+    ----------
+    r : int
+        The first part of the second signature
+    s : int
+        The second part of the second signature
+    p : int
+        The prime corresponding to the cardinality of Zp* set 
+    X : int
+        The private key of the attacker
+
+    Returns
+    -------
+    int
+        The private key of the victim  
+    """
+
+    (m_next, r_next, s_next) = s
+    print(f'Key recovery: {m_next}  {r_next}  {s_next}')
+    if gcd(r_next, p-1) != 1:
+        print("Error: SETUP has not been used!")
+        raise
+    else:
+        c = power_mod(r, X, p)
+        print(f'    She computes c ≡ ri^X (mod {p}) ≡ {r}^{X} (mod {p} ≡ {c} (mod {p}))')
+        x = (inverse_mod(int(r_next), p-1) * (m_next - s_next*inverse_mod(c, p-1))) % (p-1)
+        print(f'    x = r2^-1 (m2 - s2//c) = {r_next}^-1 ({m_next} - {s_next}//{c})')
+    return x
+
+
+
+def main():
+    print(f'######## Generation of parameters ########')
+    (p, g) = elgamal_parameters_gen(32)
+    print(f'    p = {g}')
+    print(f'    g = {g}\n')
+    print(f'######## ATTACKER  ########')
+    print(f'Eve generates her keys using g = {g} and p = {p} as parameters')
+    (X, Y) = elgamal_key_gen(g, p)
+    print(f'    X = {X}')
+    print(f'    Y ≡ g^X = {g}^{X} ≡ {Y} (mod {p})\n')
+
+    print(f'######## VICTIM  ########')
+    print(f'Alice generates her keys using g = {g} and p = {p} as parameters')
+    (x, y) = elgamal_key_gen(g, p)
+    print(f'    x = {x} (This is what we are looking for)')
+    print(f'    y ≡ g^x = {g}^{x} ≡ {y} (mod {p})\n')
+
+
+    m1 = "HI"
+    print(f'Alice wants to send the message: {m1}')
+    encoded_message = encode_message(m1)
+    print(f'encoded message: {encoded_message}\n')
+    print(f'Alice generates the first signature:')
+    (_m, r, s, k) = gen_first_signature(g, encoded_message, p, x)
+
+    print(f'Bob verifies the signature with ({_m}, {r}, {s})')
+
+    print(f'The signature corresponds: {verify_signature(p, g, y, _m, r, s)}')
+
+    m2 = "OK"
+    print(f'Alice now wants to send the message: {m2}')
+    encoded_message = 1511
+    encoded_message = encode_message(m2)
+    print(f'encoded message: {encoded_message}\n')
+    print(f'Alice generates the second signature:')
+    (_m, r_next, s_next) = gen_second_signature(g, k, encoded_message, p, x, Y)
+
+    print(f'Bob verifies the signature with ({_m}, {r}, {s})')
+
+    print(f'The signature corresponds: {verify_signature(p, g, y, _m, r_next, s_next)}')
+
+    print(f'######## SETUP ATTACK ########')
+    print(f'Eve attacks Alice private key: ')
+    k_priv = key_recovery(r, (_m, r_next, s_next), p, X)
+    print(f'    Alice private key obtained: {k_priv}')
+
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+
+
+```python
+def H(str, n):
+    """Hashing function whose value is between 0 and n-1
+
+    Parameters
+    ----------
+    str : str
+        The string to be encoded
+    n : int
+        The modulus
+
+    Returns
+    -------
+    int
+        An integer between 0 and n-1 
+    """
+
+    str = str.encode('utf-8')
+    hash = hashlib.sha512(str).digest()
+    value = int.from_bytes(hash, byteorder='little')
+    return int(value)%(n-1)
+
+
+def dh_parameters_gen(size):
+    """Diffie-Hellman parameters generation 
+
+    Parameters
+    ----------
+    size : str
+        The size of the randomly generated prime p
+
+    Returns
+    -------
+    tuple
+        A tuple containing the prime p and a generator g of group Zp* 
+    """
+
+    p = random_prime(2^(size), lbound = 2^(size-1))
+    Fp = Integers(p)
+    g = Fp.unit_gens()
+    return (p, g[0])
+
+def gen_first_keypair(p, g):
+    """ Generation of first Diffie-Hellman keypair 
+
+    Parameters
+    ----------
+    p : int
+        The prime corresponding to the cardinality of Zp* set 
+    g : int
+        A generator of Zp*
+
+    Returns
+    -------
+    tuple
+        A tuple containing the private and public key for the
+        key exchange  
+    """
+
+    x1 = ZZ.random_element(1, p-1)
+    y1 = power_mod(g, x1, p)
+    return (x1, y1)
+
+
+def gen_second_keypair(p, g, Y, W, a, b, x1):
+    """ Generation of second Diffie-Hellman keypair.
+    The key pairs generated are subverted by using attacker's1
+    public key and fixed integers W, a, b.
+
+    The fixed parameters permit to protect the SETUP attack 
+    against an user trying to guess if its key pair is 
+    subverted
+
+    Parameters
+    ----------
+    p : int
+        The prime corresponding to the cardinality of Zp* set 
+    g : int
+        A generator of Zp*
+    Y : int
+        The attacker's public key
+    W : int
+        Fixed integer 
+    a : int
+        Fixed integer 
+    b : int
+        Fixed integer 
+
+    Returns
+    -------
+    tuple
+        A tuple containing the private and public key for the
+        key exchange  
+    """
+
+    p = int(p)
+    g = int(g)
+    Y = int(Y)
+    W = int(W)
+    a = int(a)    
+    b = int(b)
+    x1 = int(x1)    
+
+    t = ZZ.random_element(0, 1)
+    z = (power_mod(g, x1 - W*t ,p) * power_mod(Y, -a*x1 - b, p)) % p
+    x2 = H(str(z), p-1)
+    y2 = power_mod(g, x2, p)
+    return x2, y2
+
+def gen_shared_secret(x, y, p):
+    """ Computes the Diffie-Hellman shared secret
+
+    Parameters
+    ----------
+    x : int
+        Your private key
+    y : int
+        Other party public key
+    p : int
+        The prime corresponding to the cardinality of Zp* set 
+
+    Returns
+    -------
+    int
+        The shared secret 
+    """
+
+    return power_mod(y, x, p)
+
+def key_recovery(p, g, y1, y2, a, b, W, X):
+    """ Recovers user's private key based on the fact we have access to 
+    two generated public key. One with function gen_first_keypair and 
+    the other with gen_second_keypair. 
+
+    Parameters
+    ----------
+    p : int
+        The prime corresponding to the cardinality of Zp* set 
+    g : int
+        A generator of Zp*
+    y1: int
+        The first public key obtained with gen_first_keypair
+    y2: int
+        The second public key obtained with gen_second_keypair
+    a : int
+        Fixed integer
+    b : int
+        Fixed integer
+    W : int
+        Fixed integer
+
+    Returns
+    -------
+    int
+        The private key of the victim
+    """
+
+    p = int(p)
+    g = int(g)
+    y1 = int(y1)
+    y2 = int(y2)
+    W = int(W)
+    a = int(a)    
+    b = int(b)
+    X = int(X)    
+
+    r = (power_mod(y1, a, p) * power_mod(g, b, p)) % p
+    print(f'    r ≡ y1_a^a ·g^b = {r} (mod {p})')
+
+    z1 = (y1 * inverse_mod( power_mod(r, X, p), p)) %p
+    print(f'    z ≡ y1_a^a ·g^b = {r} (mod {p})')
+
+    tmp = power_mod(g, H(str(z1), p-1), p)
+    if y2 == tmp:
+        return H(str(z1), p-1)
+    else:
+        z2 = z1 * inverse_mod(power_mod(g, W, p), p)
+        tmp = power_mod(g, H(str(z2), p-1), p)
+        if y2 == tmp:
+            return H(str(z2), p-1)
+        else:
+            raise ValueError('SETUP attack has not been used here')
+
+
+def main():
+
+    #Fixed integers. This integers give a good probability 
+    #for the attack to work 
+    a, b, W = (1, 4, 2437)
+
+
+    print(f'######## Generation of parameters ########')
+    (p, g) = dh_parameters_gen(32)
+    print(f'    p = {g}')
+    print(f'    g = {g}\n')
+
+    print(f'######## ATTACKER  ########')
+    print(f'Eve generates her keys using g = {g} and p = {p} as parameters')
+    X, Y = gen_first_keypair(p, g)
+    print(f'    X = {X}')
+    print(f'    Y ≡ g^X = {g}^{X} ≡ {Y} (mod {p})\n')
+
+    print(f'######## VICTIM  ########')
+    print(f'- First signature: Alice want to communicate with Bob -')
+    print(f'Alice generates her keys using g = {g} and p = {p} as parameters')
+    x1_a, y1_a = gen_first_keypair(p, g)
+    print(f'    x1_a = {x1_a} (What we are looking for)')
+    print(f'    y1_a ≡ g^x1_a = {g}^{x1_a} ≡ {y1_a} (mod {p})\n')
+    print(f'Alice sends her public key to Bob')
+
+    print(f'Bob generates her keys using g = {g} and p = {p} as parameters')
+    x1_b, y1_b = gen_first_keypair(p, g)
+    print(f'    x1_b = {x1_b}')
+    print(f'    y1_b ≡ g^x1_b = {g}^{x1_b} ≡ {y1_b} (mod {p})\n')
+    print(f'Bob sends his public key to Alice')
+
+    print(f'Alice and Bob can now both compute the shared secret')
+    print(f'    Alice by computing: s1 ≡ y1_b^x1_a = {gen_shared_secret(x1_a, y1_b, p)}')
+    print(f'    Bob by computing: s1 ≡ y1_a^x1_b = {gen_shared_secret(x1_b, y1_a, p)}\n')
+
+
+    print(f'- Second signature: Alice want to communicate with Carol -')
+    print(f'Alice generates her keys using g = {g} and p = {p} as parameters')
+    x2_a, y2_a = gen_second_keypair(p, g, Y, W, a, b, x1_a)
+    print(f'    x2_a = {x2_a} (THIS IS WHAT WE WANT)')
+    print(f'    y2_a ≡ g^x2_a = {g}^{x2_a} ≡ {y2_a} (mod {p})\n')
+    print(f'Alice sends her public key to Carol')
+
+    print(f'Carol generates her keys using g = {g} and p = {p} as parameters')
+    x1_c, y1_c = gen_first_keypair(p, g)
+    print(f'    x1_c = {x1_c}')
+    print(f'    y1_c ≡ g^x1_c = {g}^{x1_c} ≡ {y1_c} (mod {p})\n')
+    print(f'Carol sends her public key to Alice')
+
+    print(f'Alice and Carol can now both compute the shared secret')
+    print(f'    Alice by computing: s2 ≡ y1_c^x2_a = {gen_shared_secret(x2_a, y1_c, p)}')
+    print(f'    Carol by computing: s2 ≡ y2_a^x1_c = {gen_shared_secret(x1_c, y2_a, p)}')
+
+    print(f'######## SETUP ATTACK ########')
+
+    key = key_recovery(p, g, y1_a, y2_a, a, b, W, X)
+    print(f'    Eve has obtained Alice\'s private key: {key == x2_a}')
+    print(f'    She can now use Carole\'s public key to compute the shared secret: s2 ≡ y1_c^x2_a = {gen_shared_secret(x2_a, y1_c, p)}')
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+```python
+import hashlib
+import hmac
+from base64 import b64encode
+from base64 import b64decode
+from Crypto import Random
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+import os
+
+
+#Parameters come from http://www.secg.org/sec2-v2.pdf
+### EC Constants
+#Domain
+p256 = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF
+
+#Curve parameters for the curve equation: y^2 = x^3 + a256*x +b256
+a = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC
+b = 0x5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B
+
+#Base point definition
+Gx = 0x6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296
+Gy = 0x4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5
+
+
+#Curve order
+n = 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551
+
+FF = GF(p256)
+
+# Define a curve over that field with specified Weierstrass a and b parameters
+E = EllipticCurve(FF, [a,b])
+E.set_order(n)
+
+G = E(FF(Gx), FF(Gy))
+
+
+def H(m):
+	"""Hashing function 
+
+	Parameters
+	----------
+	m : str
+		The string to be hashed
+
+	Returns
+	-------
+	bytes
+		Hashed value in the form of a set of bytes  
+	"""
+	return hashlib.sha512(m).digest()
+
+def ecies_key_gen():
+	"""ECIES normal KEM function for key generation
+
+	Returns
+	-------
+	tuple
+		A tuple containing the private key and the public key
+	"""
+	kpriv = ZZ.random_element(0,n)
+	kpub = G * kpriv
+	return (kpriv, kpub)
+
+def KEM_Rg():
+	"""ECIES normal KEM function for the generation of r 
+	the random integer in {1, 2, ..., n}
+
+	Returns
+	-------
+	int
+		The random integer r
+	"""
+	return ZZ.random_element(1,n)
+
+def KEM_Kg(psk, r):
+	"""ECIES normal KEM function for session key K generation for
+	the encapsulation phase
+
+	Parameters
+	----------
+	psk : EllipticCurvePoint_finite_field
+		Public key of the attacker (normally hardwired)
+	r :	int
+		The previously randomly generated value r
+
+	Returns
+	-------
+	bytes
+		Session key K in the form of a set of bytes
+	"""
+	return H(str((psk * r).xy()).encode('utf-8'))
+
+def KEM_Cg(r):
+	"""ECIES normal KEM function for generating the value C which permits 
+	the receiver to recompute the shared secret
+
+	Parameters
+	----------
+	r : str
+		The string to be hashed
+
+	Returns
+	-------
+	EllipticCurvePoint_finite_field
+		The value C to be shared with the other user in order to recompute
+		the shared secret
+	"""
+	return r*G
+
+
+def KEM_Kd(dk, C):
+	"""ECIES normal KEM function for session key K generation for
+	the decapsulation phase 
+
+	Parameters
+	----------
+	dk : int
+		Decapsulation key
+	C :	EllipticCurvePoint_finite_field
+		Value used to compute the shared secret
+	
+	Returns
+	-------
+	bytes
+		Session key K in the form of a set of bytes
+	"""
+	return H(str((dk * C).xy()).encode('utf-8'))
+
+def ASA_Gen():
+	"""ASA KEM function for key generation
+
+	Returns
+	-------
+	tuple
+		A tuple containing the public key and the private key
+		for the attacker
+	"""
+	ssk = ZZ.random_element(0,n)
+	psk = G * ssk
+	return (psk, ssk)
+
+
+def ASA_Enc(pk, psk, tau):
+	"""Generates the session key K and the ciphertext of the KEM
+	part of the ASA
+
+	Parameters
+	----------
+	pk : int
+		Public key of the victim
+	psk :	int
+		Public key of the attacker (normally hardwired but passed
+		as argument for convenience)
+	tau : 	int
+		Signature key of the generated ciphertext
+
+	Returns
+	-------
+	tuple
+		A tuple containing the session key, the ciphertext 
+		for the futur computation of the shared secret, and 
+		the tag key
+	"""
+
+	t = None
+	r = None
+	#just for the first iteration
+	if tau == 0:
+		r = KEM_Rg()
+		print(f'	r is drawn randomly: {r}')
+	else:
+		t = KEM_Kg(psk, tau)
+		print(f'	t is computed as dk·tau: {t}')
+		# Need to be a int since we need it to compute R=r*G
+		r = int.from_bytes(H(t), byteorder='little')
+		print(f'	r is derived from the hash of t: {r}')
+
+
+	#As we dont generate ek for the moment, ek = pk
+	Ki = KEM_Kg(pk, r)
+	print(f'	Generation of new session key K: {Ki}')
+	Ci = KEM_Cg(r)
+	print(f'	Generation of C for computing the shared secret: {Ci}\n')
+	tau = r
+	return (Ki, Ci, tau)
+
+
+def ASA_Rec(pk, ssk, Ci, Ci_prev):
+	"""Recovers the private key of the victim using his public key,
+	two previous ciphertexts generated with the same instance of 
+	ASA_Enc and the private key of the attacker
+
+	Parameters
+	----------
+	pk : int
+		Public key of the victim
+	ssk : int
+		Private key of the attacker
+	Ci : int
+		i-th generated ciphertext
+	Ci_prev : int
+		(i-1)-th generated ciphertext 
+
+
+	Returns
+	-------
+	bytes
+		The session key K in the form of bytes
+	"""
+	t = KEM_Kd(ssk, Ci_prev)
+	r = int.from_bytes(H(t), byteorder='little')
+	Ki = KEM_Kg(pk, r)
+	return Ki
+
+#Use AES GCM SIV à la place de CTR
+def DEM_Encrypt(keys, m):
+	"""DEM encryption. Use AES mode SIV to encrypt
+	the message m with the use of tuple keys which
+	contains encapsulation key and MAC key
+
+	Parameters
+	----------
+	keys : bytes
+		Public key of the victim
+	m :	bytes
+		The message to be encrypted
+
+	Returns
+	-------
+	tuple
+		A tuple containing the ciphertext, the tag and
+		the nonce for AES
+	"""
+	(kE, kM) = (keys[32:],keys[:32])
+	nonce = get_random_bytes(16)
+	cipher = AES.new(kE, AES.MODE_SIV, nonce=nonce) 
+	n = b64encode(cipher.nonce).decode('utf-8')
+	c, tag = cipher.encrypt_and_digest(m)
+	#h_mac = hmac.new(kM, c, hashlib.sha256)
+	#tag = h_mac.digest() 
+	return (c, tag, n)
+
+def asa_decrypt(sk, c, tag, n):
+	"""DEM decryption. Use AES mode SIV to decrypt
+	the ciphertext c (R and ciphertext) with the use
+	of the shared secret. 
+
+	Parameters
+	----------
+	k : int
+		Secret key of the user
+	c :	tuple
+		Tuple containing the R value to compute the shared
+		secret, and the ciphertext
+	tag : bytes
+		Signature key of the generated ciphertext
+	n : bytes
+		Nonce used for the encryption of the original 
+		message 
+
+	Returns
+	-------
+	bytes
+		The message decrypted
+	"""
+	(R, ciphertext) = c
+	keys = H(str((sk * R).xy()).encode('utf-8'))
+	(kE, kM) = (keys[32:], keys[:32])
+	n = b64decode(n)
+	aes = AES.new(kE, AES.MODE_SIV, nonce=n)
+	return aes.decrypt_and_verify(ciphertext, tag)
+
+def asa_decrypt_broken(keys, ciphertext, tag, n):
+	"""DEM decyption without the need of the private key
+	of the victim but directly with keys which contains
+	(encapsulation key and MAC key)
+
+	Parameters
+	----------
+	keys : bytes
+		Secret key of the user
+	ciphertex :	bytes
+		Tuple containing the R value to compute the shared
+		secret, and the ciphertext
+	tag : bytes
+		Signature key of the generated ciphertext
+	n : bytes
+		Nonce used for the encryption of the original 
+		message 
+
+	Returns
+	-------
+	bytes
+		The message decrypted with no use of the private key
+	"""
+	(kE, kM) = (keys[32:], keys[:32])
+	n = b64decode(n)
+	aes = AES.new(kE, AES.MODE_SIV, nonce=n)
+	return aes.decrypt_and_verify(ciphertext, tag)
+
+
+print(f'######## ECIES Parameters ########')
+print(f'	Domain p256 = {p256}')
+print(f'	Curve parameter a = {a}')
+print(f'	Curve parameter b = {b}')
+print(f'	Base point G = (Gx, Gy) = ({Gx}, {Gy})')
+print(f'	Curve order n = {b}\n\n')
+
+print(f'######## ATTACKER ########')
+(psk, ssk) = ASA_Gen()
+print(f'Eve generates her keys')
+print(f'	ssk = {ssk}')
+print(f'	psk = ssk · G = {psk}\n\n')
+
+print(f'######## VICTIM ########')
+(sk_a, pk_a) = ecies_key_gen()
+print(f'Alice generates her keys')
+print(f'	sk_a = {sk_a}')
+print(f'	pk_a = sk_a · G = {pk_a}\n')
+
+(sk_b, pk_b) = ecies_key_gen()
+print(f'Bob generates his keys')
+print(f'	sk_b = {sk_b}')
+print(f'	pk_b = sk_b · G = {pk_b}\n\n')
+
+
+m1 = b"Hi Bob!"
+print(f'Alice wants to send the message to Bob: {m1}')
+(Ki1, Ci1, tag) = ASA_Enc(pk_b, psk, 0)
+print(f'Encryption of {m1} using K1:')
+(c1, tag1, n1) = DEM_Encrypt(Ki1, m1)
+print(f'	c1 = {c1}\n')
+print(f'Bob receives the message and decrypts it: ')
+m1_decrypted = asa_decrypt(sk_b, (Ci1, c1), tag1, n1)
+print(f'	m1 = {m1_decrypted}')
+
+m2 = b"How are you? Long time no see!"
+print(f'Alice wants to send this other message to Bob: {m2}')
+(Ki2, Ci2, tag) = ASA_Enc(pk_b, psk, tag)
+print(f'Encryption of {m2} using K2:')
+(c2, tag2, n2) = DEM_Encrypt(Ki2, m2)
+print(f'	c2 = {c2}\n')
+print(f'Bob receives the new message and decrypts it: ')
+m2_decrypted = asa_decrypt(sk_b, (Ci2, c2), tag2, n2)
+print(f'	m2 = {m2_decrypted}\n\n')
+
+
+print(f'######## ASA ATTACK ########')
+print(f'Eve attacks the session key K2')
+Ki2_comp = ASA_Rec(pk_b, ssk, Ci2, Ci1)
+print(f'Ki2 subversively obtained: {Ki2_comp}')
+#As we have (kE||kM), we don't need kpriv here and can decrypt the message!
+m2_broken = asa_decrypt_broken(Ki2_comp, c2, tag2, n2)
+print(f'Eve can obtain all next messages. For example m2: {m2_broken}')
 ```
 
 
