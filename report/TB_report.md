@@ -88,8 +88,6 @@ Asymmetric cryptography is based on operations that use number theory and all th
 
 #### Congruence
 
-Definition of congruence found in [^fn24]:
-
 > Let n be a fixed positive integer. Two integers a and b are said to be congruent modulo n, symbolized by 
 >
 > a ≡ b (mod n). 
@@ -98,15 +96,19 @@ Definition of congruence found in [^fn24]:
 >
 > if n divides the difference a - b; that is, provided that a - b = kn for some integer k. 
 
+This definition for congruence can be found in [^fn24].
+
 For example, let a = 46 and n = 6. This gives a ≡ 4 (mod 6). Note that this is very similar to the division with reminder since a = 46 = 7 · 6 + 4. We conclude that finding the congruence of a and n is equivalent to finding the reminder of the division a/n.  
 
 
 
 #### Quadratic residues
 
-Again from [^fn24]
+
 
 > Let p be an odd prime and gcd(a, p) = 1. If the quadratic congruence x^2 ≡ a (mod p) has a solution, then a is said to be a quadratic residue of p. Otherwise, a is called a quadratic nonresidue of p. 
+
+This definition comes from[^fn24].
 
 The important point to remember is that if a ≡ b (mod p), then a is a quadratic residue of p if and only if b is a quadratic residue of p. This means that we only need to observe the quadratic property of the numbers that are smaller than p to determine that of any other integer. 
 
@@ -134,9 +136,11 @@ What this means is that the set of the quadratic residues is {1, 3, 4, 9, 10, 12
 
 #### Generators of a group
 
-This definition comes from [^fn26]:
+
 
 >  A set of generators (g_1, ..., g_n) is a set of group elements such that possibly repeated application of the generators on themselves and each other is capable of producing all the elements in the group. Cyclic groups can be generated as powers of a single generator.
+
+This definition comes from [^fn26].
 
 In more concrete terms what this definition tells us is that if one can find an integer g such that taking the n powers of g gives us all the possible elements in the group, we say that g is a generator since it can generate all the possible values and the group has the property of being cyclic.
 
@@ -172,9 +176,9 @@ The most common and modern cryptographic schemes rely on the fact that some prob
 
 #### Discrete log problem
 
-Definition from [^fn24]:
-
 > The problem of finding the power 0< x <phi(n), if it exists, which satisfies the congruence r^{x} ≡ y (mod n) for given r, y, and n. The exponent x is said to be the discrete logarithm of y to the base r, modulo n.
+
+This definition comes from [^fn24].
 
 The discret log problem is the base of several public key cryptosystems as Diffie-Hellman key exchange and El Gamal encryption. In general, there is no efficient known algorithm for computing the discrete logarithm. There is some algorithms like the Baby-Step Giant-Step or Pohlig-Hellman that can solve it but not in a polynomial time which can be sumed up by *not fast enough*. In certain cases, the discret log problem can be solved easily but it's not the case for the cryptosystems covered in this thesis.  
 
@@ -188,9 +192,9 @@ But for large modulus and values, finding this exponent is difficult.
 
 #### Computational Diffie-Hellman assumption
 
-Definition comes from [^fn25]:
-
 > Let g be a group of order q. The computational Diffie-Hellman assumption (CDH assumption) is defined as given (g, g^a, g^b), for a randomly chosen generator g and a, b in {1, 2, ..., q-1}, it is computationally intractable to compute the value g^{ab}.
+
+This definition comes from [^fn25].
 
 What the problem says is that there is no known algorithm which takes in input g, g^a and g^b and outputs g^{ab} efficiently. It does not mean the problem is impossible, it means that in practical (understand it by with limited computation power) it is not feasible.
 
@@ -216,7 +220,7 @@ So a encryption scheme E is said stateful if its output does not consist of a ci
 
 ### General definition
 
-As described by Yung and Young, kleptography is: *The science of stealing information securely and subliminally from black-box cryptographic implementations*.  
+As described by Yung and Young, kleptography is: "The science of stealing information securely and subliminally from black-box cryptographic implementations".  
 
 This quote does not seem like much but she includes a lot of very important notions about kleptography. In this chapter, we will deconstruct this definition and show how kleptography is articulated on the double link between the ease an attacker has to steal information from a victim, to hide their malicious activity and the impossibility of a lambda user to realize it or even to do the same.
 
