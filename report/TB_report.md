@@ -13,7 +13,7 @@ Finally we will have a presentation of the main countermeasures listed in the li
 
 ## Introduction
 
-In our modern, ultra-connected world, we readily imagine that the world's great powers have eyes and ears everywhere, that 1984 is no longer as fictional as it was less than half a century ago, and that the shadow of Big Brother is becoming ever more prominent. A world where our communications, even though encrypted, could be thwarted and read by malicious people without us even realizing it. Such techniques exist and a new field of study that looks into the subject was born in 1997: kleptography. This will be the subject of this thesis.
+In our modern, ultra-connected world, we readily imagine that the world's great powers have eyes and ears everywhere, that *1984* is no longer as fictional as it was less than half a century ago, and that the shadow of *Big Brother* is becoming ever more prominent. A world where our communications, even though encrypted, could be thwarted and read by malicious people without us even realizing it. Such techniques exist and a new field of study that looks into the subject was born in 1997: kleptography. This will be the subject of this thesis.
 
 
 
@@ -37,7 +37,7 @@ By asking all these questions, we will dive into a field of cryptography little 
 
 ## State of the art
 
-In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection, i.e. SETUP [^fn5]. They wanted to show the threats one can encounter when using a black-box device such as smartcards and more recently mobile phones. At that time, the article was an attempt to warn about the risks of the black-box cryptography. Indeed, in the 90's, an American governmental project called Capstone was strongly talked about. This project aimed at developing a cryptographic standard for the general public as well as the government but met a lot of resistance from its potential users who saw it as an attempt by the American government to spy on its citizens[^fn13] due to the fact that the design of the proposed algorithm was classified so no one could review it. For many people, this was seen as a threat since the black-box aspect can not be trusted. As can be seen in the title of their article: "Should we trust Capstone?", Yung and Young were determined to demonstrate this. In addition, they proved that there are attacks that can leak the secret key of the black-box system and the user would not be able to notice it. Then in 1997[^fn4] with the proofs they made, Yung and Young introduced the concept of kleptography by creating types of SETUP attacks and defining the concept of bandwidth leakage which permits to measure the capacity of a SETUP attack to leak private information. 
+In 1996, Moti Yung and Adam Young worked on the notion of  Secretly Embedded Trapdoor with Universal Protection (SETUP) [^fn5]. They wanted to show the threats one can encounter when using a black-box device such as smartcards and more recently mobile phones. At that time, the article was an attempt to warn about the risks of the black-box cryptography. Indeed, in the 90's, an American governmental project called Capstone was strongly talked about. This project aimed at developing a cryptographic standard for the general public as well as the government but met a lot of resistance from its potential users who saw it as an attempt by the American government to spy on its citizens[^fn13] due to the fact that the design of the proposed algorithm was classified so no one could review it. For many people, this was seen as a threat since the black-box aspect can not be trusted. As can be seen in the title of their article: "Should we trust Capstone?", Yung and Young were determined to demonstrate this. In addition, they proved that there are attacks that can leak the secret key of the black-box system and the user would not be able to notice it. Then in 1997[^fn4] with the proofs they made, Yung and Young introduced the concept of kleptography by creating types of SETUP attacks and defining the concept of bandwidth leakage which permits to measure the capacity of a SETUP attack to leak private information. 
 
 As we will see further, what Yung and Young have showed is that kleptographic attacks can be considered as asymmetric backdoors. An attacker who implements the backdoor into a cryptosystem or cryptographic protocol is the only one who actually can have use of it. Furthermore, they showed that the output of that subverted cryptosystem is *computationally indistinguishable* compared to a faithful output. The asymmetric aspect also implies that even if anyone succeeds into reverse-engineering the subverted system, he can find that it's compromised but will not be able to use it, where a classic symmetric backdoor can be in turn used after its discovery.
 
@@ -72,11 +72,13 @@ A first thing that must be discussed here is the name given to the classical fig
 
 
 
-- Alice and Bob: They represent the legitimate users. Usually Alice wants to send a message to Bob and she can receive his response.
-- Carol: She represents usually the third participant in an exchange. 
-- Eve: She represents an eavesdropper (passive listener) which can listen to Alice and Bob exchanges but can not modify them.
+- Alice and Bob: they represent the legitimate users. Usually Alice wants to send a message to Bob and she can receive his response.
+- Carol: she represents usually the third participant in an exchange. 
+- Eve: she represents an eavesdropper (passive listener) which can listen to Alice and Bob exchanges but can not modify them.
 
 
+
+Despite the abundance of characters, we will stick to this list despite the interest that some may have in cryptography, because we will see, kleptographic attacks are perpetrated by a passive adversary who only listens to the exchanges between two people. 
 
 
 
