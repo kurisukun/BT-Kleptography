@@ -220,7 +220,7 @@ So a encryption scheme E is said stateful if its output does not consist of a ci
 
 ### General definition
 
-As described by Yung and Young, kleptography is: "The science of stealing information securely and subliminally from black-box cryptographic implementations".  
+As described by Yung and Young [^fn5] [^fn4], kleptography is: "The science of stealing information securely and subliminally from black-box cryptographic implementations".  
 
 This quote does not seem like much but she includes a lot of very important notions about kleptography. In this chapter, we will deconstruct this definition and show how kleptography is articulated on the double link between the ease an attacker has to steal information from a victim, to hide their malicious activity and the impossibility of a lambda user to realize it or even to do the same.
 
@@ -228,7 +228,7 @@ This quote does not seem like much but she includes a lot of very important noti
 
 ### SETUP
 
-Yung and Young designed the mechanism of SETUP (Secretly Embedded Trapdoor with Universal Protection) to perform kleptographic attacks. As described, one of the most important property of those attacks is the secrecy and the subliminality. The purpose of the SETUP mechanism is for an attacker to obtain information of the user's private key in a way that the user does not realize it or the attacker does not get caught. The SETUP does not leak information directly, it uses public parameters to hide private key information in it in a way only the person who has set the system up can recover it. 
+Yung and Young designed the mechanism of SETUP (Secretly Embedded Trapdoor with Universal Protection) to perform kleptographic attacks. As described, two of the most important property of those attacks is the secrecy and the subliminality. The purpose of the SETUP mechanism is for an attacker to obtain information of the user's private key in a way that the user does not realize it or the attacker does not get caught. The SETUP does not leak information directly, it uses public parameters to hide private key information in it. The manufacturer who has set the system up is the only one who can recover it. 
 
 
 
@@ -250,11 +250,11 @@ If we take this definition point by point, we can bring up several things:
 1. The first point shows that a user must be able to use C' in the same way as he uses C. This means that the parameters taken as input by C' must not be different from C otherwise it could make the user suspicious.
 2. The second point implies that the computation time of C' does not differ significantly from that of C. This is important because a user may feel that something is wrong if C' takes for example twice as much time as C.
 3. According to the third point, since only the attacker knows and has access to a decryption function D, only he can decrypt the leaked information.
-4. The form of the output of the two algorithms must not be different, if the user expects, for example, a 256 bits length output, then the output of C' must also be 256 bits long for the fourth point. In addition, the attacker must be able to retrieve the hidden information from the user's key.
+4. The form of the output of the two algorithms must not be different, if the user expects a 256 bits length output for example, then the output of C' must also be 256 bits long for the fourth point. In addition, the attacker must be able to retrieve the hidden information from the user's key.
 5. In fifth, a user must not be able to distinguish the output of C and C' in polynomial time with reasonable computational capacity.
 6. Finally, if the user discovers that the system is contaminated using reverse-engineering, it is still impossible for the user to recover past or future information from the private key using his study of the system. 
 
-It is important to note that for Yung and Young, this last point is really only important for the formal definition of what they call a *strong SETUP* and not for *regular SETUP* as seen previously.
+Note that for Yung and Young, this last point is really only important for the formal definition of what they call a *strong SETUP* and not for *regular SETUP* as seen previously.
 
 
 
@@ -268,11 +268,11 @@ As Yung and Young say in their paper [^fn4], this form of SETUP may seem insecur
 
 #### Strong SETUP definition
 
-As we have seen, in regular SETUP devices, we assume that the cryptosystem acts as a black-box with the exception of the condition 6.  This last condition raises an interesting property to note. This means if we have two different algorithms, one legit and an other one which is contaminated, the respective outputs of the algorithms C and C' are polynomially indistinguishable, and according to Yung and Young, this a necessary condition to obtain polynomial indistiguishability between the different past and future keys. From there, for the definition of the strong SETUP, Yung and Young assume that the contaminated device sometimes uses the normal algorithm and sometimes the SETUP. We therefore have [^fn4]:  
+As we have seen, in regular SETUP devices, we assume that the cryptosystem acts as a black-box with the exception of the condition 6.  This last condition raises an interesting property to note. This means if we have two different algorithms,a legit one and a contaminated one, the respective outputs of the algorithms C and C' are polynomially indistinguishable, and according to Yung and Young, this a necessary condition to obtain polynomial indistiguishability between the different past and future keys. From there, for the definition of the strong SETUP, Yung and Young assume that the contaminated device sometimes uses the normal algorithm and sometimes the SETUP. We therefore have [^fn4]:  
 
 > A strong setup is a regular setup, but in addition we assume that the users are able to hold and fully reverse-engineer the device after its past usage and before its future usage. They are able to analyze the actual implementation of C’ and deploy the device. However, the users still cannot steal previously generated/future generated keys, and if the setup is not always applied to future keys, then setup-free keys and setup keys remain polynomially indistinguishable.
 
-Again, this means that an user who has totally reverse-engineered the contaminated device but not obtain the attacker's key and random choices. Even if he manages to know which functions and fixed values are in the code and all of this done before and after every use of the device, the user still would not be able to recompute the keys that were generated. Even worse, as the strong SETUP sometimes uses the normal algorithm and sometimes not, the user does not know which generated keys contain some information as it is assumed that the device doesn't keep information of when the SETUP is used or not used. 
+Again, this means that an user who has totally reverse-engineered the contaminated device but didn't obtain the attacker's key and random choices. Even if he manages to know which functions and fixed values are in the code and all of this done before and after every use of the device, the user would still  not be able to recompute the keys that were generated. Even worse, as the strong SETUP sometimes uses the normal algorithm and others not, the user does not know which generated keys contain some information as it is assumed that the device doesn't keep information of when the SETUP is used or not used. 
 
 This form of SETUP is much safer than the weak version since the system doesn't need to be a black-box cryptosystem. 
 
@@ -297,15 +297,15 @@ For D2, the device is used exactly like a normal device. If we take the example 
 
 #### Leakage bandwidth
 
-As explained before, an attacker uses the public parameters of a user in order to recover the private key. But as we will see, it is not always possible to obtain a ratio of 1 set of public parameters for 1 exfiltration, it is indeed sometimes necessary to have access to 2 or more public keys. This is what Yung and Young call *leakage bandwidth* and they define it as follows[^fn4]:  
+As explained before, an attacker uses the public parameters of a user in order to recover the private key. But as we will see, it is not always possible to obtain a ratio of one set of public parameters for one exfiltration, it is indeed sometimes necessary to have access to two or more public keys. This is what Yung and Young call *leakage bandwidth* and they define it as follows[^fn4]:  
 
 > A (m, n)-leakage scheme is a SETUP mechanism that leaks m keys/secret messages over n keys/messages that are output by the cryptographic device (m ≤ n).
 
 
 
-This means if an attacker requires a public key to recover a private key, the system is a (1,1)-leakage scheme. In the same way, if an attacker needs 3 encrypted messages to be sent to get the private key, it implies the system is a (1,3)-leakage scheme.
+This means if an attacker requires a public key to recover a private key, the system is a (1,1)-leakage scheme. In the same way, if an attacker needs three encrypted messages to be sent to get the private key, it implies that the system is a (1,3)-leakage scheme.
 
-Throughout this work, we will address the leakage bandwidth issue for each discussed SETUP attacks. 
+Throughout this work, we will address the leakage bandwidth issue for each discussed SETUP attack. This will allow us to judge the effectiveness of the SETUP attack.
 
 
 
@@ -315,13 +315,13 @@ Throughout this work, we will address the leakage bandwidth issue for each discu
 
 Let's suppose Alice and Bob try to communicate securely with RSA. Eve is the passive attacker who has contaminated the RSA system and that system is being used by the two others. Thus let (d,n) and (e,n) be the keys generated by Alice who will receive a message by Bob.
 
-Let (D, N) and (E, N) be Eve's keys, respectively private and public keys. Eve's goal is to obtain Alice's private key d and at the end decrypt the communications.
+Let (D, N) and (E, N) be Eve's keys, respectively private and public keys. Eve's goal is to obtain Alice's private key d and in the end decrypt the communications.
 
 
 
 ##### Algorithm of the attack
 
-Normally in RSA, we choose $e$ to be equal to 65'537 in practice, but sometimes it happens we randomly generate the exponent e such that 1 < e < ϕ(n) and gcd{(e, ϕ(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from {0, 1}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus ϕ(n). Here is a comparison between the normal RSA and the contaminated one:
+Normally in RSA, we choose $e$ to be equal to 65'537 in practice, but sometimes it happens that we randomly generate the exponent e such that 1 < e < ϕ(n) and gcd{(e, ϕ(n))} = 1. Same for the parameters p and q, so as e, they are intergers with a size of k so that they are generated from {0, 1}^k. Here the idea of the attack is to derivate the value of Alice's exponent e from p^E(mod N). Finally, d is as usual computed from e by taking its multiplicative inverse modulus ϕ(n). Here is a comparison between the normal RSA and the contaminated one:
 
 | RSA key generation algorithm      | SETUP RSA key generation algorithm for victim | SETUP RSA key generation algorithm for attacker |
 | --------------------------------- | --------------------------------------------- | ----------------------------------------------- |
@@ -334,9 +334,9 @@ Normally in RSA, we choose $e$ to be equal to 65'537 in practice, but sometimes 
 
 
 
-Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing p ≡ e^D (mod N) = (p^E )^D (mod N) = p (mod N)  since the parameter n is public. Then she can compute ϕ(n) and finally find d ≡ e^{-1} (mod ϕ(n)), Alice's private key and decrypt all messages Bob sends to her. 
+Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing p ≡ e^D (mod N) = (p^E )^D (mod N) = p (mod N)  since the parameter n is public. Then she can compute ϕ(n) and finally find d ≡ e^{-1} (mod ϕ(n)), Alice's private key and decrypt all messages Bob sends her. 
 
-It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption of Bob to obtain the prime p. 
+It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption from Bob to obtain the prime p. 
 
 Here is the sequence of a message exchange between Alice and Bob and the implementation of the attack by Eve (see **Indicate index** for the corresponding code): 
 
@@ -388,7 +388,7 @@ Eve has decrypted Bobs message: 7210533
 
 ##### Security of the attack
 
-One criticism that can be made of this attack is that it is not very realistic given the values that the exponent e can take, indeed, e is too large compared to the values of the modulus n. This implies in our scenario that if Alice expects rather small values of e, she will easily realize the deception. We can notice it in the previous example, we see that the exponent is 2410382527 while n is 1928624021. In their article [^fn5], Yung and Young point out that this is what happens in the case of PGP, the exponent being of the order of 5 bits. Nowadays it is unimaginable to have such a small amount of bits for the exponent, most of the time the exponent is equal to 65537 but the values we get here in the attack are still too big not to be noticed.
+One criticism that can be made of this attack is that it is not very realistic given the values that the exponent e can take. Indeed, e is too large compared to the values of the modulus n. In our scenario this implies that if Alice expects rather small values of e, she will easily realize the deception. We can notice it in the previous example, we see that the exponent is 2410382527 while n is 1928624021. In their article [^fn5], Yung and Young point out that this is what happens in the case of PGP, the exponent being of the order of 5 bits. Nowadays it is unimaginable to have such a small amount of bits for the exponent, most of the time the exponent is equal to 65537 but the values we get here in the attack are still too big not to be noticed.
 
 
 
@@ -485,13 +485,13 @@ r{i+1}^-1 · (x ·  r{i+1}) ≡ x (mod p - 1)
 For this to work, the attacker needs to inverse r{i+1} (mod p-1), and for the latter to exist, as before, we must show that gcd(r{i+1}, p) = 1. And given that k ≡ c, then r{i+1} ≡ g^k{i+1} ≡ g^ {c^{-1}} (mod p). So from this, we have that:
 gcd(g^ c^{-1} (mod p), p - 1) = 1
 
-which explains the need for condition (2). 
+which explains the need for the condition (2). 
 
-Eve therefore knows when she does the calculations that if gcd(r{i+1}, p-1) =! 1, then k{i+1} =! c^{-1} and therefore she cannot use the signature pair to find the private key. 
+Therefore Eve knows when she does the calculations that if gcd(r{i+1}, p-1) =! 1, then k{i+1} =! c^{-1} and therefore she cannot use the signature pair to find the private key. 
 
 
 
-In the **example 2**, we have a step-by-step example of the attack can be found. First, we show the different parameters being generated for Alice and Eve. Then we see the computation of the first signature (m1, r1, s1) by Alice and the verification of it by Bob. Alice signs an other message afterwards to send it to Bob and produces the triplet (m2, r2, s2) which is also verifies by Bob. In the end, the sequence shows how Eve recovers Alice's private key x using both signatures previously calculated.  
+In the **example 2**, we have a step-by-step example of the attack can be found. First, we show the different parameters being generated for Alice and Eve. Then we see the computation of the first signature (m1, r1, s1) by Alice and the verification of it by Bob. Alice signs an other message afterwards to send it to Bob and produces the triplet (m2, r2, s2) which is also verified by Bob. In the end, the sequence shows how Eve recovers Alice's private key x using both signatures previously calculated.  
 
 **Example 2:**
 
@@ -550,13 +550,13 @@ This attack still has a high chance of failing because of all the conditions 2 a
 
 P(gcd(a, b) = 1) = 6/pi^2
 
-The proof of this result can be found in  [^fn6]. Let's assume now that our randomly drawn integers are c and p-1, it means that P(gcd(c, p-1) = 1) = 6/pi^2, same for g^ {c^{-1}} and p-1. So for the generation of a single pair of signatures, we have then:
+The proof of this result can be found in  [^fn6]. Let's assume now that our randomly drawn integers are c and p-1. It means that P(gcd(c, p-1) = 1) = 6/pi^2, as well for g^ {c^{-1}} and p-1. So for the generation of a single pair of signatures, we have then:
 
 P(gcd(c, p-1) = 1) and P(gcd( g^ {c^{-1}}, p-1) = 1) =  (6/pi^2)  ^2. 		(7)
 
-This means Eve has approximatively 37% chance of getting an useful pair of signatures that permit to attack an user's private key, which is not that good. However, we can show that producing more signatures increases the chances of getting an useful pair of signatures. 
+This means Eve has approximatively 37% chance of getting an useful pair of signatures that allows to attack an user's private key, which is not that good. However, we can show that producing more signatures increases the chances of getting an useful pair of signatures. 
 
-Let's assume that Eve wants to generate a bigger number of pairs of signatures, let's that number be 10. The probability that all 10 pairs of signatures are not useful for Eve is given by:
+Let's assume that Eve wants to generate a bigger number of pairs of signatures, let that number be 10. The probability that all 10 pairs of signatures are not useful for Eve is given by:
 
 P(10 pairs of signatures are not useful) = (1 - (6/pi^2) ^2) ^10 ≃ 0.0099
 
@@ -566,7 +566,7 @@ This means that Eve has a probability of getting at least one 1 useful pair out 
 
 P(1 pair out of 4 pairs of signatures is useful) = 1 - (1 - (6/pi^2) ^2) ^10  ≃ 1 - 0.0099  ≃ 0.99.
 
-which greatly increased the chances of using the SETUP for Eve.
+which would greatly increase the chances of using the SETUP for Eve.
 
 
 
@@ -574,7 +574,7 @@ which greatly increased the chances of using the SETUP for Eve.
 
 In their article[^fn4], Yung and Young explained that this SETUP attack would not follow the same concern as the previous ones. Previously, the objective was to produce an output that won't warn the user about the malicious nature of the device or give him any chance of using his properties either. This is why each SETUP we have seen until now created a subliminal channel with a known bandwidth for leaking private information inside the output of the cryptosystem. This time, the approach uses a SETUP attack in the discrete log.   
 
-Alice and Bob want to agree on a secret by using an insecure channel. For the recall, this is what the Diffie-Hellman permits to do. The protocol uses a large prime p and g a generator of Z*p as public parameters. Then to establish the shared secret, Alice and Bob randomly draw a private key x from {1, 2, ..., p-1} (as in El Gamal scheme) and compute their respective public key and send it to the other.
+Alice and Bob want to agree on a secret by using an insecure channel. For the recall, this is what the Diffie-Hellman allows to do. The protocol uses a large prime p and g a generator of Z*p as public parameters. Then to establish the shared secret, Alice and Bob randomly draw a private key x from {1, 2, ..., p-1} (as in El Gamal scheme) and compute their respective public key and send it to the other.
 
 For this attack, Yung and Young assume that Alice needs a brand new key pair every time a connection is established in the channel and will therefore require Alice to have a different x private key for each different user she wants to exchange with. In our example, Alice will have the key x1_a to communicate with Bob and the key x2_a to communicate with Carol.
 
@@ -925,7 +925,7 @@ This definition does not bring any new notion to the definition of symmetric enc
 
 #### Stateless and stateful ASA
 
-To move forward, let's define the notion of stateless and stateful ASA and look at the importance of it for Bellare *et al.*  As defined in **METTRE LIEN**, we can define E and D to be stateless of stateful encryption/decryption algorithms. Then the whole symmetric encryption scheme:
+To move forward, let's define the notion of stateless and stateful ASA and look at the importance of it for Bellare *et al.*  As explained in **METTRE LIEN**, we can define E and D to be stateless of stateful encryption/decryption algorithms. Then the whole symmetric encryption scheme:
 
 > Π is stateless if both E and D are stateless. In this case, we drop the second component of the output of both algorithms, so that E now returns just a ciphertext and D just a message. 
 
