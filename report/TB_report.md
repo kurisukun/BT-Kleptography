@@ -61,9 +61,7 @@ Throughout these years of research, work on how to counter kleptographic attacks
 
 ## Theoretical introduction
 
-In order to enable the reader to understand the main part of this thesis, a theoretical introduction to some of the concepts discussed is given.
-
-
+In order to enable the reader to understand the main part of this thesis, a theoretical introduction to some of the concepts discussed is given such as some theoretical reminders on the theory of numbers, a presentation of the concepts of difficult problems as well as that of stateful encryption.
 
 
 ### Terminology 
@@ -90,6 +88,8 @@ Asymmetric cryptography is based on operations that use number theory and all th
 
 #### Congruence
 
+Definition of congruence found in [^fn24]:
+
 > Let n be a fixed positive integer. Two integers a and b are said to be congruent modulo n, symbolized by 
 >
 > a ≡ b (mod n). 
@@ -103,6 +103,8 @@ For example, let a = 46 and n = 6. This gives a ≡ 4 (mod 6). Note that this is
 
 
 #### Quadratic residues
+
+Again from [^fn24]
 
 > Let p be an odd prime and gcd(a, p) = 1. If the quadratic congruence x^2 ≡ a (mod p) has a solution, then a is said to be a quadratic residue of p. Otherwise, a is called a quadratic nonresidue of p. 
 
@@ -132,7 +134,9 @@ What this means is that the set of the quadratic residues is {1, 3, 4, 9, 10, 12
 
 #### Generators of a group
 
->  Let g ∈ Z^{∗}n .If Z^{∗}{n} = {g^1 , g^2 , . . . , g^{n−1}}, then Z^{∗}n is a cyclic group and g is a generator of this group.
+This definition comes from [^fn26]:
+
+>  A set of generators (g_1, ..., g_n) is a set of group elements such that possibly repeated application of the generators on themselves and each other is capable of producing all the elements in the group. Cyclic groups can be generated as powers of a single generator.
 
 In more concrete terms what this definition tells us is that if one can find an integer g such that taking the n powers of g gives us all the possible elements in the group, we say that g is a generator since it can generate all the possible values and the group has the property of being cyclic.
 
@@ -168,7 +172,9 @@ The most common and modern cryptographic schemes rely on the fact that some prob
 
 #### Discrete log problem
 
-> Let G be a group and g be the generator of a cyclic subgroup of G. The discrete log problem is defined as finding the smallest value of x which satisfies the congruence g^{x} ≡ y (mod n) for given g, y and n. 
+Definition from [^fn24]:
+
+> The problem of finding the power 0< x <phi(n), if it exists, which satisfies the congruence r^{x} ≡ y (mod n) for given r, y, and n. The exponent x is said to be the discrete logarithm of y to the base r, modulo n.
 
 The discret log problem is the base of several public key cryptosystems as Diffie-Hellman key exchange and El Gamal encryption. In general, there is no efficient known algorithm for computing the discrete logarithm. There is some algorithms like the Baby-Step Giant-Step or Pohlig-Hellman that can solve it but not in a polynomial time which can be sumed up by *not fast enough*. In certain cases, the discret log problem can be solved easily but it's not the case for the cryptosystems covered in this thesis.  
 
@@ -181,6 +187,8 @@ But for large modulus and values, finding this exponent is difficult.
 
 
 #### Computational Diffie-Hellman assumption
+
+Definition comes from [^fn25]:
 
 > Let g be a group of order q. The computational Diffie-Hellman assumption (CDH assumption) is defined as given (g, g^a, g^b), for a randomly chosen generator g and a, b in {1, 2, ..., q-1}, it is computationally intractable to compute the value g^{ab}.
 
@@ -1456,9 +1464,9 @@ print(f'Eve has decrypted Bob\'s message: {stolen_message}')
 [^fn22]: Cryptographic reverse firewalls
 [^fn23]: Self-guarding cryptographic protocols against algorithm substitution attacks
 
-
-
-
+[^fn24]: Elementary number theory
+[^fn25]: https://en.wikipedia.org/wiki/Computational_Diffie%E2%80%93Hellman_assumption
+[^fn26]: https://mathworld.wolfram.com/GroupGenerators.html
 
 
 
