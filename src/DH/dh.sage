@@ -33,6 +33,7 @@ def H(str, n):
     int
         An integer between 0 and n-1 
     """
+
     str = str.encode('utf-8')
     hash = hashlib.sha512(str).digest()
     value = int.from_bytes(hash, byteorder='little')
