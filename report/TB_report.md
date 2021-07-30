@@ -909,17 +909,17 @@ In 2014, Bellare, Paterson, and Rogawa brought the formal study of Algorithm Sub
 
 #### ASA definition
 
-In their article, Bellare Paterson and Rogawa didn't give a formal definition of ASA so the following definition is taken from the article *Algorithm Substitution Attacks from a Steganographic Perspective*[^fn14] of Sebastian Bernd and Maciej Liskiewicz:
+In their article, Bellare, Paterson and Rogawa didn't give a formal definition of ASA so the following definition is taken from the article *Algorithm Substitution Attacks from a Steganographic Perspective*[^fn14] of Sebastian Bernd and Maciej Liskiewicz:
 
 > The goal of an algorithm substitution attack (ASA), also called a subversion attack (SA), is to replace an honest implementation of a cryptographic tool by a subverted one which allows to leak private information while generating output indistinguishable from the honest output
 
-Nevertheless, what they say is that they have deliberately chosen to restrict themselves to attacks on symmetric encryption schemes. They explain this with several reasons: the first is that analyzing the risks of subverting a symmetric cipher is paramount because of its wide use in secure communications. The second is that even if they limit themselves to this case, their scenario corresponds to what would happen if an agency like the NSA  would do against a cryptographic library rather than subverting a whole protocol built on the top of the library. In particular if we come back to Bellare *et al.*, they define the notion of symmetric encryption scheme as:
+Nevertheless, what they say is that they have deliberately chosen to restrict themselves to attacks on symmetric encryption schemes. They give several reasons: the first is that analyzing the risks of subverting a symmetric cipher is paramount because of its wide use in secure communications. The second is that even if they limit themselves to this case, their scenario corresponds to what would happen if an agency like the NSA  would do against a cryptographic library rather than subverting a whole protocol built on the top of the library. In particular if we come back to Bellare *et al.*, they define the notion of symmetric encryption scheme as:
 
 
 
 > A scheme for symmetric encryption is a triple Π = (K, E, D). The key space K is a finite nonempty set. The encryption algorithm E is a possibly randomized algorithm that maps a four-tuple of strings K, M, A, σ to a pair of strings (C, σ' ) <- E(K, M, A, σ). The arguments to E represent the key, message (plaintext), associated data and current state. The output consists of the ciphertext C and revised state σ'. 
 
-This definition does not bring any new notion to the definition of symmetric encryption scheme but shows adequately the notations used by the authors. Still, we can remark the argument σ which brings the notion of stateless and stateful encryption and represents a very important notion as we are going to see later. 
+This definition does not bring any new notion to the definition of symmetric encryption scheme but shows adequately the notations used by the authors. Still, we can remark the argument σ which brings the idea of stateless and stateful encryption and represents a very important notion as we are going to see later. 
 
 
 
@@ -1136,68 +1136,6 @@ K2 = pk_b · r2
 
 
 
-
-
-**Example 4:**
-
-```
-######## ECIES Parameters ########
-        Domain p256 = 115792089210356248762697446949407573530086143415290314195533631308867097853951
-        Curve parameter a = 115792089210356248762697446949407573530086143415290314195533631308867097853948
-        Curve parameter b = 41058363725152142129326129780047268409114441015993725554835256314039467401291
-        Base point G = (Gx, Gy) = (48439561293906451759052585252797914202762949526041747995844080717082404635286, 36134250956749795798585127919587881956611106672985015071877198253568414405109)
-        Curve order n = 41058363725152142129326129780047268409114441015993725554835256314039467401291
-
-
-######## ATTACKER ########
-Eve generates her keys
-        ssk = 58838396319493825383104721895283935676912853646809801436890844515563607631722
-        psk = ssk · G = (34895083821615038918945357660645403750100807748280796089285312141199412671290 : 70929535530632879797413707089930123971477995591423489061021884153079738172818 : 1)
-
-
-######## VICTIM ########
-Alice generates her keys
-        sk_a = 39088190859383473116142363868579745906902021768414789681971762271941217980346
-        pk_a = sk_a · G = (89125863040739043860196367648319271027533964647781116240153374391415428141952 : 46638112481445961387189516128429644133801528104955125418496473870926220607628 : 1)
-
-Bob generates his keys
-        sk_b = 638176052832910618261857738833585438678176492975138845745617831798441448235
-        pk_b = sk_b · G = (59929036718936969070455527322824279752503929558479457164078544986361858888347 : 51169097984593657399334271838041568203088670384939466063182194354210126830776 : 1)
-
-
-Alice wants to send the message to Bob: b'Hi Bob!'
-        r is drawn randomly: 11404374402036149946458103114521199186545526041676897434290683308543432978207
-        Generation of new session key K: b'_J\xa3y\xc7\xb7\xa9\xf4 N\x93\xb8|\xa1\x0c\x81\xf7\xaa \x13\x80\x8f#\xdb_p\x8d4{\xc4\x0c\xcf\xa3\x9cp\xf3\xa4\x80\x91\xa8\x9c\x15[\xa5XY\xdf\xdbd\xf1C\xfa\x88.\x00 \x9f%\\aD\x89\xc5\xfb'
-        Generation of C for computing the shared secret: (100634477644593596018123117138425958485031768819353966631313725918150098247574 : 43556407711346571955975380130134229692498106958701555734856002108849770387116 : 1)
-
-Encryption of b'Hi Bob!' using K1:
-        c1 = b':\xbd\x9f\x8a\x07 \x7f'
-
-Bob receives the message and decrypts it: 
-        m1 = b'Hi Bob!'
-Alice wants to send this other message to Bob: b'How are you? Long time no see!'
-        t is computed as dk·tau: b'\xce\xc2K\xa9\xe0\xb6\xb7\xb8\x9d\xa7\x82\xcc\x9e\xcb0\x8b\xf0\xa4\x07F\x12\xcb\xdd\x88\xd5<\xa6\xad\xb8xt5JnR/\xa6[xE\xbf\x83\xc9\xa2\xb1Cr%*\xd5>;\x04\xbecW5\xda\x9bm\xfc\xbbnY'
-        r is derived from the hash of t: 8294209415470846092582213819008412906015867758651869151134844722039135881397668371253368532466435802156724257025104089223816254302455059809348389130276658
-        Generation of new session key K: b'+\xcd\\P_G\x8d\\\xc6y\xba\xec\xc2n\x0c\xb9h\xa6\x1c\xc23@\xa7\xc2\xa7\x9d\x80\xbc#\x9a\xb6|V\xf1i\xd7\xc1V9\n\x8d\x17\xb4\xae\x0br*\xb7\x95\xa1\x89\xf9\xaf\x83\xcf\xaa\xd6\xe7\xb3$\x12?\x8c\x1c'
-        Generation of C for computing the shared secret: (49192655753765325942502098928842336177626478624865783139816854382928239880819 : 92427603345840309287107561447952708441346474652001325009287180100513815668983 : 1)
-
-Encryption of b'How are you? Long time no see!' using K2:
-        c2 = b'<\x9fhJ*@\xa4nC\xed$\x0f\x9b\x9a\xd4\xa5\r\x80+\xa1tXX\x0eU\xd1T\xfb\x02\xa0'
-
-Bob receives the new message and decrypts it: 
-        m2 = b'How are you? Long time no see!'
-
-
-######## ASA ATTACK ########
-Eve attacks the session key K2
-Ki2 subversively obtained: b'+\xcd\\P_G\x8d\\\xc6y\xba\xec\xc2n\x0c\xb9h\xa6\x1c\xc23@\xa7\xc2\xa7\x9d\x80\xbc#\x9a\xb6|V\xf1i\xd7\xc1V9\n\x8d\x17\xb4\xae\x0br*\xb7\x95\xa1\x89\xf9\xaf\x83\xcf\xaa\xd6\xe7\xb3$\x12?\x8c\x1c'
-Eve can obtain all next messages. For example m2: b'How are you? Long time no see!'
-```
-
-
-
-
-
 ##### Security of the attack
 
 Because of the somewhat peculiar form of the security proofs provided by Chen *et al* in the form of a game, a reminder of each property obtained as well as an explanation of the proof will be given rather than the more formal proof itself.
@@ -1232,19 +1170,19 @@ In this thesis, several attacks have been mentioned and explained in detail. In 
 
 
 
-- SETUP in RSA: The exponent e of the user contains his parameter p. With the use of her private key D, Eve can recover p and then compute q since the parameter n = p · q is public. Then Eve can compute ϕ(n) and then recover Alice's private key d.
+- SETUP in RSA: the exponent e of the user contains his parameter p. With the use of her private key D, Eve can recover p and then compute q since the parameter n = p · q is public. Then Eve can compute ϕ(n) and then recover Alice's private key d.
 
   This is a strong SETUP and has a (1,1)-bandwidth leakage.
 
-- SETUP in El Gamal signatures: The random integer k_{i+1} incorporates k\_{i} respectively coming from the second and the first signature.  
+- SETUP in El Gamal signatures: the random integer k_{i+1} incorporates k\_{i} respectively coming from the second and the first signature.  
 
   This is a weak SETUP and has a (1,2)-bandwidth leakage.
 
-- SETUP in Diffie-Hellman: This SETUP mechanism integrates the very first user's private key x1 in his second one x2. To perform the recovery, the attacker needs the user to have performed two key exchanges, and thus generated two public keys y1 and y2. For both connections, it is necessary that they involve Alice in the process.
+- SETUP in Diffie-Hellman: this SETUP mechanism integrates the very first user's private key x1 in his second one x2. To perform the recovery, the attacker needs the user to have performed two key exchanges, and thus generated two public keys y1 and y2. For both connections, it is necessary that they involve Alice in the process.
 
   This is a strong SETUP and has a (1,2)-bandwidth leakage.
 
-- ASA in ECIES: The KEM part of the ECIES hybrid encryption is subverted. The algorithm is modified to hide the session key K in the ciphertext. The random value ri is defined differently depending on whether it is the first iteration of the algorithm or not. Therefore, from the second iteration, the subverter can recalculate the random value used to encapsulate the key and thus find K. 
+- ASA in ECIES: the KEM part of the ECIES hybrid encryption is subverted. The algorithm is modified to hide the session key K in the ciphertext. The random value ri is defined differently depending on whether it is the first iteration of the algorithm or not. Therefore, from the second iteration, the subverter can recalculate the random value used to encapsulate the key and thus find K. 
 
 
 
@@ -1254,11 +1192,11 @@ Of all the attacks presented, the SETUP attack in Diffie-Hellman seems to be the
 
 ### Protections against kleptographic attacks
 
-Throughout this thesis, we have studied how kleptographic attacks were possible on known and widely used cryptosystems through a considerable number of mathematical concepts. However, it is important to note that solutions, although not widely discussed in the literature or by the industry, do exist and are proposed. In this section, we will focus on some of the solutions considered by some researchers to counter such attacks. However, this part does not aim at giving all the details and concepts behind these protections, and even less the audacity to give a perfectly exhaustive list of them.
+Throughout this thesis, we have studied how kleptographic attacks were possible on known and widely used cryptosystems through a considerable number of mathematical concepts. However, it is important to note that solutions, although not widely discussed in the literature or by the industry, do exist and are proposed. In this section, we will focus on solutions considered by some researchers to counter such attacks. However, this part does not aim at giving all the details and concepts behind these protections, and even less the audacity to give a perfectly exhaustive list of them.
 
 
 
-In the conclusion of their respective articles [^fn2] [^fn3] [^fn5], some of the authors gave some countermeasures against the kleptographic attacks:
+In the conclusion of their respective articles [^fn2] [^fn3] [^fn5], some of the authors gave countermeasures against the kleptographic attacks:
 
 
 
@@ -1266,7 +1204,7 @@ In the conclusion of their respective articles [^fn2] [^fn3] [^fn5], some of the
 
 Giving the user a way to influence the randomness of the system and making the algorithms used accessible. As we have often seen, an important criterion of kleptographic attacks is not to arouse suspicion about the output of the device. Allowing the user to read the algorithm and make sure it works (i.e. not using black-box devices) and the random values it produces would prevent this. If the user then has access to a device that he knows he can trust, he could compare the outputs and make sure they are the same given his total control. 
 
-Like Yung and Young, we can see that in the article by Bellare *et al.* that one of the countermeasures that comes up to prevent ASAs is the abandonment of algorithms using randomness and instead using deterministic and stateful algorithms. Yet, as we have seen with ECIES ASA, this condition seems not sufficient since we were able to mount the attack with the effective loss of a security property for the mechanism. Furthermore, Chen *et al.* pointed out that turning your back on non-deterministic algorithms means turning your back on IND-CPA security as well which would be a consequential loss.
+Like Yung and Young, we can see in the article by Bellare *et al.* that one of the countermeasures that comes up to prevent ASAs is the abandonment of algorithms using randomness and instead using deterministic and stateful algorithms. Yet, as we have seen with ECIES ASA, this condition seems not sufficient since we were able to mount the attack with the effective loss of a security property for the mechanism. Furthermore, Chen *et al.* pointed out that turning your back on non-deterministic algorithms means turning your back on IND-CPA security as well which would be a consequential loss.
 
 
 
@@ -1278,7 +1216,7 @@ Using cryptosystems of different origins in cascade. As the process is now handl
 
 #### Integrity checks
 
-The user has to be certain that the software generating the keys is trustworthy. To do so, the user should be able to run integrity checks which can detect modification that could be done to the software. This can be achieved with deterministic compilation[^fn16] (or also known as a reproducible build) and with tools like Gitian[^fn17] or Bazel [^fn18] which ensures that a same source code will product a same binary. if the binary is compiled from trusted source code, then SETUP attacks is countered.  
+The user has to be certain that the software generating the keys is trustworthy. To do so, the user should be able to run integrity checks which can detect modification that could be done to the software. This can be achieved with deterministic compilation[^fn16] (or also known as a reproducible build) and with tools like Gitian[^fn17] or Bazel [^fn18] which ensures that a same source code will product a same binary. If the binary is compiled from trusted source code, then SETUP attacks is countered.  
 
 
 
@@ -1296,7 +1234,7 @@ Make the source generating the randomness, the key generation and the user sendi
 
 #### Industry standards improvement
 
-Industry standards must move in the direction of increasing confidence in hardware devices. This proposed measure by Yung and Young is not very well argued, but it is clear that a somewhat more political dimension is at play here. They do not explain how to increase this confidence, but we can still think   that industry may make some security proofs of their devices, have more open sourced projects and rely more and more on community reviews.
+Industry standards must move in the direction of increasing confidence in hardware devices. This measure proposed by Yung and Young is not very well argued, but it is clear that a somewhat more political dimension is at play here. They do not explain how to increase this confidence, but we can still think   that industry may make some security proofs of their devices, have more open sourced projects and rely more and more on community reviews.
 
 
 
@@ -1307,16 +1245,16 @@ Randomized algorithms may still stay usable with some additional constraints mad
 
 
 1. Introduced by Russel, Tang, Yung and Zhou [^fn19], the split-program methodology consists of decomposing the randomized algorithm into two algorithms RG and dG. Later as they showed in a following article[^fn21], this method wasn't sufficient to avoid every type of kleptographic attacks. To address some of the shortcomings of their model, the authors [^fn20] [^fn21] subsequently proposed to decompose their function RG into two independent functions RG0 ad RG1. Their respective outputs are combined (amalgamation of the outputs as the authors call it) with the use of a publicly known hashing function to generate the final random number. This way, one can ensure that the randomness mechanism hasn't been subverted.  
-2. Cryptographic reverse firewall introduced by Mironov and Stephens-Davidowitz in [^fn22] has the purpose to protect a protocol between two entities where one of them may use a subverted algorithm. The mechanism is depicted as a third-party whose purpose is to sanitize the user's outgoing transactions so it won't alter her security: it takes the input/output coming from/to the random generation algorithm and re-randomize it. Unfortunately, this implies that the mechanism requires the use of a perfectly reliable source of randomness too.
-3. Self-guarding mechanism [^fn23] by Fischlin and Mazaheri is quiet interesting and is based on the principle that the subversion of the algorithm will happen sooner or later, but that it first goes through a phase where it can be completely trusted. The idea is to collect samples of cipher from this initial state and store them. In the second phase, when the algorithm has been subverted, the challenge phase begins and the strategy is to use the previous samples to check if the generated ciphers are corrupted in any way.
+2. Cryptographic reverse firewall introduced by Mironov and Stephens-Davidowitz in [^fn22] has the purpose to protect a protocol between two entities where one of them may use a subverted algorithm. The mechanism is depicted as a third-party whose purpose is to sanitize the user's outgoing transactions so it won't alter its security: it takes the input/output coming from/to the random generation algorithm and re-randomize it. Unfortunately, this implies that the mechanism requires the use of a perfectly reliable source of randomness too.
+3. Self-guarding mechanism [^fn23] by Fischlin and Mazaheri is quite interesting and is based on the principle that the subversion of the algorithm will happen sooner or later, but that it first goes through a phase where it can be completely trusted. The idea is to collect samples of cipher from this initial state and store them. In the second phase, when the algorithm has been subverted, the challenge phase begins and the strategy is to use the previous samples to check if the generated ciphers are corrupted in any way.
 
 
 
 ### Uncovered subjects
 
-This thesis introduced the fundamental concepts of kleptography, presented how it developed over time in parallel with the announcement of various NSA scandals, its renewed interest and the new concepts that are still emerging today. Nevertheless, much of the work done by Yung and Young could not be presented here. We can think in particular of the attack on Kerberos [^fn5], the improvement of the SETUP in RSA using the method of bias removal(put here). Also, it would have been quite possible to implement more ASAs, for example on signature algorithms (put here), or even not to limit it to an encryption scheme but to an application like Signal, or a kleptographic attack implementation against a cryptocurrency. The field of possibilities is, as you can see, enormous.
+This thesis introduced the fundamental concepts of kleptography, presented how it developed over time in parallel with the announcement of various NSA scandals, its renewed interest and the new concepts that are still emerging today. Nevertheless, much of the work done by Yung and Young could not be presented here. We can think in particular of the attack on Kerberos [^fn5], the improvement of the SETUP in RSA using the method of bias removal. Also, it would have been quite possible to implement more ASAs, for example on signature algorithms (put here), or even not to limit it to an encryption scheme but to an application like Signal, or a kleptographic attack implementation against a cryptocurrency. The field of possibilities is, as you can see, enormous.
 
-Finally, even if we have discussed existing countermeasures, it would be interesting to consider for a future work to show the effectiveness of these solutions through implementation in Sage and Python as it is the case here. 
+Finally, even if we have discussed existing countermeasures, it would be interesting to consider, for a future work, showing the effectiveness of these solutions through implementation in Sage and Python as it is the case here. 
 
 
 
