@@ -247,9 +247,9 @@ A more formal definition as been given by Yung and Young in their article [^fn4]
 
 If we take this definition point by point, we can bring up several things:
 
-1. The first point shows that a user must be able to use C' in the same way as he uses C. This means that the parameters taken as input by C' must not be different from C otherwise it could make the user suspicious.
+1. The first point shows that a user must be able to use C' in the same way he uses C. This means that the parameters taken as input by C' must not be different from C otherwise it could make the user suspicious.
 2. The second point implies that the computation time of C' does not differ significantly from that of C. This is important because a user may feel that something is wrong if C' takes for example twice as much time as C.
-3. According to the third point, since only the attacker knows and has access to a decryption function D, only he can decrypt the leaked information.
+3. According to the third point, since only the attacker knows and has access to a decryption function D, only him can decrypt the leaked information.
 4. The form of the output of the two algorithms must not be different, if the user expects a 256 bits length output for example, then the output of C' must also be 256 bits long for the fourth point. In addition, the attacker must be able to retrieve the hidden information from the user's key.
 5. In fifth, a user must not be able to distinguish the output of C and C' in polynomial time with reasonable computational capacity.
 6. Finally, if the user discovers that the system is contaminated using reverse-engineering, it is still impossible for the user to recover past or future information from the private key using his study of the system. 
@@ -272,7 +272,7 @@ As we have seen, in regular SETUP devices, we assume that the cryptosystem acts 
 
 > A strong setup is a regular setup, but in addition we assume that the users are able to hold and fully reverse-engineer the device after its past usage and before its future usage. They are able to analyze the actual implementation of C’ and deploy the device. However, the users still cannot steal previously generated/future generated keys, and if the setup is not always applied to future keys, then setup-free keys and setup keys remain polynomially indistinguishable.
 
-Again, this means that an user who has totally reverse-engineered the contaminated device but didn't obtain the attacker's key and random choices. Even if he manages to know which functions and fixed values are in the code and all of this done before and after every use of the device, the user would still  not be able to recompute the keys that were generated. Even worse, as the strong SETUP sometimes uses the normal algorithm and others not, the user does not know which generated keys contain some information as it is assumed that the device doesn't keep information of when the SETUP is used or not used. 
+Again, this means that an user who has totally reverse-engineered the contaminated device but didn't obtain the attacker's key and random choices. Even if he manages to know which functions and fixed values are in the code and all of this done before and after every use of the device, the user would still  not be able to recompute the keys that were generated. Even worse, as the strong SETUP sometimes uses the normal algorithm and sometimes not, the user does not know which generated keys contain some information as it is assumed that the device doesn't keep information of when the SETUP is used or not used. 
 
 This form of SETUP is much safer than the weak version since the system doesn't need to be a black-box cryptosystem. 
 
@@ -334,7 +334,7 @@ Normally in RSA, we choose $e$ to be equal to 65'537 in practice, but sometimes 
 
 
 
-Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing p ≡ e^D (mod N) = (p^E )^D (mod N) = p (mod N)  since the parameter n is public. Then she can compute ϕ(n) and finally find d ≡ e^{-1} (mod ϕ(n)), Alice's private key and decrypt all messages Bob sends her. 
+Because of how Alice's exponent is generated, Eve can easily factor modulus n by computing p ≡ e^D (mod N) = (p^E )^D (mod N) = p (mod N)  since the parameter n is public. Then she can compute ϕ(n) and finally find d ≡ e^{-1} (mod ϕ(n)), Alice's private key, and decrypt all messages Bob sends her. 
 
 It is easy to understand that this example of SETUP is a (1,1)-leakage because Eve only needs to wait for one encryption from Bob to obtain the prime p. 
 
@@ -487,7 +487,7 @@ gcd(g^ c^{-1} (mod p), p - 1) = 1
 
 which explains the need for the condition (2). 
 
-Therefore Eve knows when she does the calculations that if gcd(r{i+1}, p-1) =! 1, then k{i+1} =! c^{-1} and therefore she cannot use the signature pair to find the private key. 
+Therefore, when she does the calculations, Eve knows that if gcd(r{i+1}, p-1) =! 1, then k{i+1} =! c^{-1} and therefore she cannot use the signature pair to find the private key. 
 
 
 
@@ -564,7 +564,7 @@ P(10 pairs of signatures are not useful) = (1 - (6/pi^2) ^2) ^10 ≃ 0.0099
 
 by using the previous result (7).
 
-This means that Eve has a probability of getting at least one 1 useful pair out of 4 pairs of signatures is given by:
+This means that Eve has a probability of getting at least one useful pair out of 4 pairs of signatures, which is given by:
 
 P(1 pair out of 4 pairs of signatures is useful) = 1 - (1 - (6/pi^2) ^2) ^10  ≃ 1 - 0.0099  ≃ 0.99.
 
@@ -574,7 +574,7 @@ which would greatly increase the chances of using the SETUP for Eve.
 
 ### SETUP in Diffie-Hellman
 
-In their article[^fn4], Yung and Young explained that this SETUP attack would not follow the same concern as the previous ones. Previously, the objective was to produce an output that won't warn the user about the malicious nature of the device or give him any chance of using his properties either. This is why each SETUP we have seen until now created a subliminal channel with a known bandwidth for leaking private information inside the output of the cryptosystem. This time, the approach uses a SETUP attack in the discrete log.   
+In their article[^fn4], Yung and Young explained that this SETUP attack would not follow the same concern as the previous ones. Previously, the objective was to produce an output that won't warn the user about the malicious nature of the device nor give him any chance of using his properties either. This is why each SETUP we have seen until now created a subliminal channel with a known bandwidth for leaking private information inside the output of the cryptosystem. This time, the approach uses a SETUP attack in the discrete log.   
 
 Alice and Bob want to agree on a secret by using an insecure channel. For the recall, this is what the Diffie-Hellman allows to do. The protocol uses a large prime p and g a generator of Z*p as public parameters. Then to establish the shared secret, Alice and Bob randomly draw a private key x from {1, 2, ..., p-1} (as in El Gamal scheme) and compute their respective public key and send it to the other.
 
@@ -598,7 +598,7 @@ The attack goes as follow:
 
    and represents the output of the device. As Yung and Young say in their article, the value the private key x1 is stored for the next time the device will be used, and only this one time.
 
-   Now that Alice's device has output the public key y1, she can send it to Bob who in turn has also generated its respective keys. After this, Alice and Bob can compute their shared secret which will permit them to communicate with confidentiality. But if we assume that Alice and Bob want to chance their respective keys, or that Alice wants to send messages securely with a completely different user Carol. 
+   Now that Alice's device has output the public key y1, she can send it to Bob who in turn has also generated its respective keys. After this, Alice and Bob can compute their shared secret which will permit them to communicate with confidentiality. But if we assume that Alice and Bob want to exchange their respective keys, or that Alice wants to send messages securely with a completely different user Carol, then Alice will need to go back to the key generation step one more time. 
 
 2. For the second usage, the private key x2 is not randomly chosen, it is constructed with the use of multiple integers:
 
@@ -672,7 +672,7 @@ As we can see, equation (9) is the same as equation (2) for t = 0 and implies th
 
 y2 ≡ g^x2 ≡ g^H(z) ≡ g^H(z1) (mod p).
 
-On the other hand, if the device were to have drawn t = 1, then an additional calculus has to be done by using equations (9) and (8):
+On the other hand, if the device were to have drawn t = 1, then an additional calculation has to be done by using equations (9) and (8):
 
 z2≡ z1 / g^W
 
@@ -698,7 +698,7 @@ Let's suppose Alice can choose the value of the exponents and assume that a, b a
 
 z ≡ g^x1 · Y^{-x1} 														(10)
 
-If Alice generate two pairs of private and public keys, since she knows that H is an invertible function:
+If Alice generates two pairs of private and public keys, since she knows that H is an invertible function:
 
 z ≡ H^{-1}(x2)
 
@@ -728,9 +728,9 @@ But if X is even, it follows that:
 
 
 
-To resume, we now know that in a contaminated system Y^{x1} has a probability of 0.75 to be a quadratic residue and 0.25 for a non-residue. Compared to an uncontaminated system where the distribution of quadratic residuals is balanced[^fn7], the device modified by Eve is unbalanced. This means Alice has the possibility to determine if the device she's using is a contaminated one or not. She computes several private key pairs and calculate the result (11). If she finds out that there are significantly more quadratic residues than non-residues, she will have the certainty that her device is contaminated. 
+To resume, we now know that, in a contaminated system, Y^{x1} has a probability of 0.75 to be a quadratic residue and 0.25 for a non-residue. Compared to an uncontaminated system where the distribution of quadratic residuals is balanced[^fn7], the device modified by Eve is unbalanced. This means Alice has the possibility to determine if the device she's using is a contaminated one or not. She computes several private key pairs and calculates the result (11). If she finds out that there are significantly more quadratic residues than non-residues, she will have the certainty that her device is contaminated. 
 
-To summarize, the use of these fixed integers effectively prevents Alice from checking the quadratic residue property and thus prevents her from determining the true nature of the cryptosystem she uses.
+In other words, the use of these fixed integers effectively prevents Alice from checking the quadratic residue property and thus prevents her from determining the true nature of the cryptosystem she uses.
 
 
 
@@ -840,7 +840,7 @@ and since x1 is chosen at random in {1, 2, ..., p-1}, then z must be uniformly d
 
 > The Discrete Log SETUP is secure iff the DH problem is secure. 
 
-For explanations about what the Diffie-Hellman problem represents, have a look at section **METTRE SECTION ICI**. What they explain here is if an user have a way to solve the Diffie-Hellman problem, the SETUP wouldn't stay secure and vice-versa. The proof goes as follows:
+For explanations about what the Diffie-Hellman problem represents, have a look at section **METTRE SECTION ICI**. What they explain here is if an user has a way to solve the Diffie-Hellman problem, the SETUP wouldn't stay secure and vice-versa. The proof goes as follows.
 
 Suppose the existence of an oracle A that is able to solve the Diffie-Hellman problem. This is denoted by Yung and Young as:
 
@@ -897,9 +897,7 @@ As previously showed, z is uniformly distributed in Zp from their first claim. H
 
 With definitions previously seen we showed that this SETUP on Diffie-Hellman is a strong SETUP as defined in **METTRE SECTION ICI**.
 
-
-
-Finally, Yung and Young showed that the attack could be improved. Indeed, the attack may seem for the moment still a bit weak because of the fact that it takes two exchanges to Eve in order to be able to recover the key of a user. But the bandwidth can be drastically increased. The proposed idea is the following: when two key exchanges have already been performed, instead of removing x3 randomly, we compute it as x3 = H(z) where z = g^{x2 - Wt}Y^{-ax2 -b}. Then the new public key y3 is calculated following the same principle as before, i.e. y3 = g^{x3} (mod p). Subsequently, the operation can be repeated l times so that the attack now has a (l, l+1)-bandwidth where after a chain of l private keys generated based on the previous one, the new private key is once again drawn randomly.  
+Finally, Yung and Young showed that the attack could be improved. Indeed, the attack may seem still a bit weak for the moment because it takes two exchanges to Eve in order to be able to recover the key of a user. But the bandwidth can be drastically increased. The suggested idea is the following: when two key exchanges have already been performed, instead of removing x3 randomly, we compute it as x3 = H(z) where z = g^{x2 - Wt}Y^{-ax2 -b}. Then the new public key y3 is calculated following the same principle as before, i.e. y3 = g^{x3} (mod p). Subsequently, the operation can be repeated l times so that the attack now has a (l, l+1)-bandwidth where after a chain of l private keys generated based on the previous one, the new private key is once again drawn randomly.  
 
 
 
@@ -949,7 +947,7 @@ This implies that the subverted encryption scheme must be able to take both legi
 
 #### ASA in ECIES encryption scheme
 
-As we already saw in their article of 2020, Chen, Huang and Yung [^fn3] showed there are possible ASAs on PKE (more precisely on KEMs) and they gave a very high level analysis of it. They noticed that a lot of PKE schemes actually use hybrid encryption: they use a public key cryptosystem to encapsulate the *session key* (KEM) which is then used for encrypting a message with the use of a symmetric encryption cryptosystem (DEM). So the main objective is to show how an attacker can subvert the KEM part in a way he can recover the session key so the DEM part shatters.  
+As we've already seen in their article of 2020, Chen, Huang and Yung [^fn3] showed there are possible ASAs on PKE (more precisely on KEMs) and they gave a very high level analysis of it. They noticed that a lot of PKE schemes actually use hybrid encryption: they use a public key cryptosystem to encapsulate the *session key* (KEM) which is then used for encrypting a message with the use of a symmetric encryption cryptosystem (DEM). So the main objective is to show how an attacker can subvert the KEM part in a way he can recover the session key so the DEM part shatters.  
 
 
 
@@ -1002,16 +1000,16 @@ KEM.Dec(sk, ψ = (C, π)):
 
 
 
-- KEM.Gen takes as input the public parameter i.e. elliptic curve domain parameters in the case of ECIES and that are used by both users to compute correctly every step of the encryption algorithm. This algorithm uses two subalgorithms:
+- KEM.Gen takes as input the public parameter i.e. elliptic curve domain parameters in the case of ECIES that are used by both users to compute correctly every step of the encryption algorithm. This algorithm uses two subalgorithms:
 
   - KEM.Ek which generates the pair of encapsulation and decapsulation process keys (ek, dk)
-  - KEM.Tk which generated the pair of tag generation and verification process keys (tk, vk). This operation is seen as optional if there is no authenticated encryption asked. 
+  - KEM.Tk which generates the pair of tag generation and verification process keys (tk, vk). This operation is seen as optional if there is no authenticated encryption asked. 
 
   Then it outputs the public key pk = (ek, tk) which permits the action of encapsulating and generating the tag and the private key sk = (dk, vk) which permits to verify the tag of the message and then if the tag is correct to decrypt.
 
   In ECIES, this is done exactly the same way as sk is drawn randomly and then pk is computed as pk = sk*G.
 
-- KEM.Enc which takes as input the public key of the other user and outputs the session key K and ψ = (C, π) where C is the key ciphertext and π is the key tag. As in ECIES, we use authentication encryption which implies the calculation of a tag in order to verify that the message received comes from the person we think.
+- KEM.Enc which takes as input the public key of the other user and outputs the session key K and ψ = (C, π) where C is the key ciphertext and π is the key tag. As in ECIES, we use authentication encryption which implies the calculation of a tag in order to verify that the message received comes from the person we think. Here again, the algorithm is composed of multiple subalgorithms:
 
   - KEM.Rg which generates the next random value r.
 
@@ -1021,7 +1019,7 @@ KEM.Dec(sk, ψ = (C, π)):
 
     Derivation of the symmetric encryption key and MAC key with a KDF. The KDF takes the shared secret S = Px where P = (Px, Py) computed as the multiplication of r and the public key.
 
-  - KEM.Cg which computes C = rG which will permit to the other user to perform the decryption of the message as in normal ECIES.
+  - KEM.Cg which computes C = rG which will allow to the other user to perform the decryption of the message as in normal ECIES.
 
   - KEM.Tg which computes the ciphertext tag. This computation is done only if the authenticated encryption is required. 
 
@@ -1029,11 +1027,11 @@ KEM.Dec(sk, ψ = (C, π)):
 
   - KEM.Kd takes dk and C so it can generate session key K 
 
-    In ECIES this is when the shared secret is derived from C and the receiver's private key. //The computation goes as dk\*C = dk\*rG = r*Kb
+    In ECIES this is when the shared secret is derived from C and the receiver's private key. 
 
   -  KEM.Vf  uses vk and C to compute the tag π'. Just like some of the previous steps, this step may be optional.
 
-    Note that like in ECIES, if the tags don't correspond, the encryption is not processed. For this particular algorithm, K is not output.
+    Note that like in ECIES, if the tags don't match, the encryption is not processed. For this particular algorithm, K is not output.
 
 
 
@@ -1076,7 +1074,7 @@ we can see some changes have been made. Let's take each algorithm one after the 
 
 ##### Algorithm of the attack
 
-Suppose Alice wants to communicate securely with Bob using the ECIES encryption scheme. To do this, let Alice and Bob generate their respective key pairs (sk_a, pk_a) and (sk_b, pk_b) and let m1 = "Hi Bob!" be the first message she wants to send to him. Finally let Eve's generated keys with the help of function ASA.Gen be (ssk, psk). Her private key remains secret since she does not want to let anyone use the ASA mechanism and psk is directly wired to the functions requiring it.
+Suppose Alice wants to communicate securely with Bob using the ECIES encryption scheme. To do this, let Alice and Bob generate their respective key pairs (sk_a, pk_a) and (sk_b, pk_b) and let m1 be the first message she wants to send to him. Finally let Eve's generated keys be (ssk, psk) with the help of function ASA.Gen. Her private key remains secret since she does not want to let anyone use the ASA mechanism and psk is directly wired to the functions requiring it.
 
 First the KEM is used to encapsulate the session key using the ASA.Enc function. Being the first encapsulation that Alice performs, the initial value of τ is ε so r1 is drawn randomly with KEM.Rg. So the procedure followed by the algorithm is the following:
 
@@ -1094,7 +1092,7 @@ and then
 
 Finally τ takes the value of r1, changing it from initial value ε.
 
-Then comes the DEM part where the data will be effectively encrypted. It does not matter which symmetric encryption algorithm is used since what the attack subverts is the KEM. Let's say it's AES with mode CTR for the encryption and a HMAC like SHA256 for the authentication. Alice uses K1 to encrypt the message m1 so she gets c1 and calculates the corresponding tag t1.
+Then comes the DEM part where the data will be effectively encrypted. It does not matter which symmetric encryption algorithm is used since the attack subverts the KEM. Let's say it's AES with mode CTR for the encryption and a HMAC like SHA256 for the authentication. Alice uses K1 to encrypt the message m1 so she gets c1 and calculates the corresponding tag t1.
 
 
 
@@ -1224,7 +1222,7 @@ This property is easily demonstrated. It can be seen that the ASA.Enc function i
 
 ## Conclusion
 
-In this final chapter, some details of the different presented attacks are repeated here to give a brief summary of it. In addition of it, for every attack proposed, it is mentioned how realistic it is to use it to deploy a kleptographic attack. Followed by this, a few suggestions on how to counter such attacks are given and finally some recommendations on possible research areas that this work could not address.
+In this final chapter, some details of the different presented attacks are repeated to give a brief summary of it. In addition to it, for every attack described, it is mentioned how realistic it is to use it to deploy a kleptographic attack. Followed by this, a few suggestions on how to counter such attacks are given and finally some recommendations on possible research areas that this work could not address.
 
 
 
