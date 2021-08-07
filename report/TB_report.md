@@ -1067,7 +1067,7 @@ we can see some changes have been made. Let's take each algorithm one after the 
 
 
 - ASA.Gen does not change significantly. We see the use of KEM.Ek which is enough to perform the encapsulation mechanism. If the authentication of the message is needed, then ASA.Gen is a clone of KEM.Gen. Note that after their generation, psk and ssk are respectively connected to ASA.Enc and guarded by the attacker.
-- ASA.Enc, unlike previously, has two more parameters as input: psk the hard-wired public key of the subverter and τ which represents the internal state and its initial value is set to ε. τ allows to recognize if it is the first use of ASA.Enc or not in which case the value of ri is not calculated the same way. How the ciphertext is generate still follows the same legitimate process by running KEM.Cg and KEM.Kg.  
+- ASA.Enc, unlike previously, has two more parameters as input: psk the hard-wired public key of the subverter and τ which represents the internal state and its initial value is set to ε. τ allows to recognize if it is the first use of ASA.Enc or not in which case the value of ri is not calculated the same way. How the ciphertext is generate still follows the same legitimate process by running KEM.Cg and KEM.Kg. Furthermore this function shows us with the use of this internal state that this ASA is indeed a stateful ASA.
 - ASA.Rec is newly introduced and is used to retrieve the session key. To do so, there must be at least more than one ciphertext. 
 
 
@@ -1155,6 +1155,10 @@ This property is easily demonstrated. It can be seen that the ASA.Enc function i
 > The ASA is session-key-recoverable if KEM is universally decryptable.
 
  The session-key-recoverability has been described as the ability to correctly recover the session key K output by ASA.Enc with the algorithm ASA.Rec. The result here shows that since the ASA uses KEM.Kd and KEM.Kg and with the definition of universally decryptability, the attacker is able to recover K. This is actually what we have seen in the **METTRE LIEN ICI** recovering the session key section with result (3). 
+
+
+
+The authors explain that it is impossible to expect strong undetectability in the sense of Bellare et al. This property ensures that even if the user were to seize key K, he would still not be able to distinguish a legitimate ciphertext from an illegitimate one. Nevertheless, they point out that the condition is easily exploitable and remains very realistic in the sense of a real attack on KEMs because it only requires access to the previous random. 
 
 
 
